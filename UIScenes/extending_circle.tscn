@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://cs662uon0q7qq"]
+
+[sub_resource type="GDScript" id="GDScript_eb1yn"]
+resource_name = "main"
+script/source = "extends Node2D
+
+
+var circle_color : Color = Color.RED
+var circle_thikness : float = 10.0
+var extending_speed : float = 500.0
+var max_radius : float = 200.0
+
+var _r : float = 0.0
+
+func _process(delta: float) -> void:
+	_r += extending_speed * delta
+	if _r >= max_radius:
+		set_process(false)
+		queue_free()
+		return
+	queue_redraw()
+
+
+func _draw() -> void:
+	draw_circle(Vector2.ZERO, _r, Color(circle_color, 1.0 - _r / max_radius), false, circle_thikness, true)
+"
+
+[node name="ExtendingCircle" type="Node2D"]
+script = SubResource("GDScript_eb1yn")

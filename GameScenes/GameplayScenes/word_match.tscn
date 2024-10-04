@@ -1,4 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://7k76twct10lf"]
+[gd_scene load_steps=6 format=3 uid="uid://7k76twct10lf"]
+
+[ext_resource type="LabelSettings" uid="uid://cmvvkplrsact3" path="res://UIScenes/UIAssets/word_match_label_settings.tres" id="1_grdyw"]
 
 [sub_resource type="GDScript" id="GDScript_nej85"]
 resource_name = "main"
@@ -45,7 +47,7 @@ func _process(delta: float) -> void:
 	if not _is_matching:
 		return
 	
-	modulate.a = %FailTimer.time_left / _available_time
+	%WordLabel.material.set_shader_parameter(\"progress\", 1.0-%FailTimer.time_left / _available_time)
 
 
 func _on_matched() -> void:
@@ -57,9 +59,28 @@ func _on_fail_timer_timeout() -> void:
 	failed.emit()
 "
 
-[sub_resource type="LabelSettings" id="LabelSettings_5nxxc"]
+[sub_resource type="Shader" id="Shader_xy7lo"]
+code = "shader_type canvas_item;
 
-[sub_resource type="LabelSettings" id="LabelSettings_puq7s"]
+
+uniform float alpha_factor = 0.5;
+uniform float progress = 0.0;
+
+void fragment() {
+	vec4 col = texture(TEXTURE, UV);
+	col.a *= alpha_factor;
+	if (UV.x < progress) {
+		col.a = mix(col.a, 0.0, 1.0-UV.x/progress);
+	}
+	COLOR = col;
+}
+
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4suni"]
+shader = SubResource("Shader_xy7lo")
+shader_parameter/alpha_factor = 0.2
+shader_parameter/progress = 0.0
 
 [sub_resource type="GDScript" id="GDScript_cbigr"]
 resource_name = "aghldhjifgkhglareh"
@@ -96,9 +117,10 @@ grow_vertical = 2
 [node name="WordLabel" type="Label" parent="CenterContainer"]
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0.329412)
+material = SubResource("ShaderMaterial_4suni")
 layout_mode = 2
 text = "Привет"
-label_settings = SubResource("LabelSettings_5nxxc")
+label_settings = ExtResource("1_grdyw")
 
 [node name="MatchLabel" type="Label" parent="CenterContainer/WordLabel"]
 layout_mode = 1
@@ -107,18 +129,20 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-label_settings = SubResource("LabelSettings_puq7s")
+label_settings = ExtResource("1_grdyw")
 
 [node name="FailTimer" type="Timer" parent="."]
 unique_name_in_owner = true
 one_shot = true
 
 [node name="Label" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 499.0
 offset_top = 182.0
 offset_right = 634.0
 offset_bottom = 230.0
+label_settings = ExtResource("1_grdyw")
 script = SubResource("GDScript_cbigr")
 
 [connection signal="matched" from="." to="." method="_on_matched"]

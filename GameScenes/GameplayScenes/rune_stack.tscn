@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://b7yll0m41uka3"]
+[gd_scene load_steps=4 format=3 uid="uid://b7yll0m41uka3"]
 
 [sub_resource type="GDScript" id="GDScript_bp7to"]
 resource_name = "main"
@@ -18,7 +18,6 @@ signal failed
 
 var _completed_runes : int = 0
 
-
 func begin_runes(runes:Array, time:float) -> void:
 	for i in runes:
 		var rune_match : Control = load(ScenesNamespace.RUNE_MATCH_SCENE_FILEPATH).instantiate()
@@ -30,6 +29,7 @@ func begin_runes(runes:Array, time:float) -> void:
 		rune_match.succeed.connect(_on_rune_completed.bind(rune_match, rune_label))
 		%Words.add_child(rune_label)
 		_completed_runes = 0
+		%TimeBar.alltime = time
 	
 	%FailTimer.wait_time = time
 	%FailTimer.start()
@@ -72,6 +72,17 @@ func _process(delta: float) -> void:
 	text = \"%.3f\" % %FailTimer.time_left
 "
 
+[sub_resource type="GDScript" id="GDScript_22ptn"]
+resource_name = "timebar"
+script/source = "extends ProgressBar
+
+var alltime : float = 1.0
+
+
+func _process(delta: float) -> void:
+	value = %FailTimer.time_left / alltime
+"
+
 [node name="RuneStack" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -112,11 +123,32 @@ theme_override_constants/separation = 2
 unique_name_in_owner = true
 
 [node name="Label" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 1092.0
 offset_top = 36.0
 offset_right = 1220.0
 offset_bottom = 85.0
 script = SubResource("GDScript_62kxw")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 100
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 100
+
+[node name="TimeBar" type="ProgressBar" parent="MarginContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+max_value = 1.0
+step = 0.0
+show_percentage = false
+script = SubResource("GDScript_22ptn")
 
 [connection signal="timeout" from="FailTimer" to="." method="_on_fail_timer_timeout"]

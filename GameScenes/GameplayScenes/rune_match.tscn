@@ -16,10 +16,10 @@ var _matching_point_idx : int = 0
 var _mouse_node : Control
 
 var _is_matching : bool = false
-
-
+var _is_dragging : bool = false
+#
 #func _ready() -> void:
-	#begin_match(preload(\"res://GameScenes/rune_image_puzzle.tscn\").instantiate())
+	#begin_match(preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\").instantiate(), 100000)
 
 
 func begin_match(rune_match_puzzle:Control, time:float) -> void:
@@ -60,6 +60,16 @@ func _process(delta: float) -> void:
 			_mouse_node = marker
 			min_length = dist_to_mouse
 			min_idx = i
+	
+	
+	if _is_dragging:
+		if _mouse_node == _key_points_markers[_matching_point_idx]:
+			_matching_point_idx += 1
+	
+	if _matching_point_idx == len(_key_points_markers):
+		success()
+		return
+
 
 
 func _input(event: InputEvent) -> void:
@@ -72,10 +82,10 @@ func _input(event: InputEvent) -> void:
 			return
 		
 		_matching_point_idx += 1
-		
-		if _matching_point_idx == len(_key_points_markers):
-			success()
-			return
+		_is_dragging = true
+	
+	if event.is_action_released(\"mouse_left\"):
+		fail()
 
 
 func _draw() -> void:

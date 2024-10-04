@@ -21,6 +21,9 @@ func _on_main_menu_ui_about_us_button_pressed() -> void:
 
 
 func _on_main_menu_ui_play_button_pressed() -> void:
+	if GuiTransitions.in_transition():
+		return
+	
 	GuiTransitions.hide()
 	await GuiTransitions.hide_completed
 	get_tree().change_scene_to_file(ScenesNamespace.PLAYING_SCENE_FILEPATH)

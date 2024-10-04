@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3 uid="uid://bck1tuauc0uv4"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_b1koa"]
+font_size = 50
+
+[node name="GameCompletedUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ShadingScreen" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.588235)
+
+[node name="CenterContainer" type="CenterContainer" parent="ShadingScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ShadingScreen/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="ShadingScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Текст победы"
+label_settings = SubResource("LabelSettings_b1koa")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ShadingScreen/CenterContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 5
+
+[node name="Button" type="Button" parent="ShadingScreen/CenterContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "--Главное меню--"
+
+[node name="Button2" type="Button" parent="ShadingScreen/CenterContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "--Выход--"

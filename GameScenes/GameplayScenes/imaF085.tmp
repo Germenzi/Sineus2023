@@ -1,0 +1,196 @@
+[gd_scene load_steps=4 format=3 uid="uid://bu65gtqjpyrsn"]
+
+[ext_resource type="Texture2D" uid="uid://b5bwlyolkwol2" path="res://icon.svg" id="1_yy65s"]
+
+[sub_resource type="GDScript" id="GDScript_w2a63"]
+resource_name = "main"
+script/source = "extends Control
+
+const DRAGGABLE_SCENE : PackedScene = preload(\"res://GameScenes/GameplayScenes/draggable_image_piece.tscn\")
+
+signal completed
+signal piece_correctly_dropped
+signal piece_drop_missed
+signal failed
+
+@export
+var hit_radius : float = 20.0
+
+var _dragging : Control 
+var _in_puzzle : bool = false
+
+#func _ready() -> void:
+	#begin(preload(\"res://GameScenes/image_puzzle_task.tscn\").instantiate())
+
+
+func begin(scene:Control, time_to_solve:float) -> void:
+	for i in %PieceContainer.get_children():
+		i.queue_free()
+	
+	for i in %CorrectlyDroppedPieces.get_children():
+		i.queue_free()
+	
+	%PuzzleImage.texture = scene.get_main_texture()
+	for i in scene.get_pieces_info():
+		var inst : Control = DRAGGABLE_SCENE.instantiate()
+		inst.texture = i[0]
+		%PieceContainer.add_child(inst)
+		
+		inst.dragged.connect(_on_piece_dragged.bind(inst))
+		inst.dropped.connect(_on_piece_dropped.bind(inst))
+		
+		inst.modulate = Color(randf(), randf(), randf())
+		inst.position_at_image = i[1]
+	
+	%FailTimer.wait_time = time_to_solve
+	%FailTimer.start()
+	_in_puzzle = true
+
+
+func _process(delta: float) -> void:
+	if not _in_puzzle:
+		return
+	
+	queue_redraw()
+	if _dragging != null:
+		_dragging.position = get_local_mouse_position() - _dragging.size / 2
+
+
+func _on_piece_dragged(piece:TextureRect) -> void:
+	if not _in_puzzle:
+		return
+	
+	if _dragging != null:
+		return
+	
+	piece.reparent(%DraggingContainer)
+	_dragging = piece
+
+
+func _on_piece_dropped(piece:TextureRect) -> void:
+	if not _in_puzzle:
+		return
+	
+	if _dragging == null:
+		return
+	
+	if (piece.global_position + piece.size/2 - %PuzzleImage.global_position - piece.position_at_image).length() < hit_radius:
+		piece.reparent(%CorrectlyDroppedPieces)
+		piece.global_position = %PuzzleImage.global_position + piece.position_at_image - piece.size/2
+		piece.draggable = false
+		piece.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		piece_correctly_dropped.emit()
+	else:
+		piece.reparent(%PieceContainer)
+		piece_drop_missed.emit()
+	
+	_dragging = null
+	
+	if %PieceContainer.get_child_count() == 0:
+		completed.emit()
+		%FailTimer.stop()
+		#print(\"WIN\")
+
+
+func _draw() -> void:
+	for i:TextureRect in %PieceContainer.get_children():
+		draw_circle((%PuzzleImage.global_position + i.position_at_image)-global_position, hit_radius, Color.RED)
+
+
+func _on_fail_timer_timeout() -> void:
+	_in_puzzle = false
+	failed.emit()
+"
+
+[sub_resource type="GDScript" id="GDScript_h25yv"]
+resource_name = "dfgdhafhfgh"
+script/source = "extends Label
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	text = \"%.3f\" % %FailTimer.time_left
+"
+
+[node name="ImagePuzzle" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_w2a63")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PuzzleImage" type="TextureRect" parent="CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("1_yy65s")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="PieceContainer" type="HBoxContainer" parent="MarginContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 10
+alignment = 1
+
+[node name="DraggingContainer" type="Node" parent="."]
+unique_name_in_owner = true
+
+[node name="CorrectlyDroppedPieces" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -576.0
+offset_top = -324.0
+offset_right = 576.0
+offset_bottom = 324.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="FailTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 900.0
+offset_top = 290.0
+offset_right = 1024.0
+offset_bottom = 353.0
+script = SubResource("GDScript_h25yv")
+
+[connection signal="timeout" from="FailTimer" to="." method="_on_fail_timer_timeout"]

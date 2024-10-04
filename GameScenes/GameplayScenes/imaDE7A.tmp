@@ -6,7 +6,7 @@
 resource_name = "main"
 script/source = "extends Control
 
-const DRAGGABLE_SCENE : PackedScene = preload(\"res://GameScenes/draggable_image_piece.tscn\")
+const DRAGGABLE_SCENE : PackedScene = preload(\"res://GameScenes/GameplayScenes/draggable_image_piece.tscn\")
 
 signal completed
 signal piece_correctly_dropped
@@ -168,6 +168,7 @@ unique_name_in_owner = true
 [node name="CorrectlyDroppedPieces" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

@@ -1,0 +1,73 @@
+[gd_scene load_steps=2 format=3 uid="uid://7k76twct10lf"]
+
+[sub_resource type="GDScript" id="GDScript_nej85"]
+resource_name = "main"
+script/source = "extends Control
+
+signal matched
+
+var _word_to_match : String = \"\"
+var _is_matching : bool = false
+var _match_index : int = 0
+
+func _ready() -> void:
+	begin(\"Яздесь\")
+
+
+func begin(word:String) -> void:
+	%WordLabel.text = word.to_lower()
+	_word_to_match = word.to_lower()
+	%WordLabel/MatchLabel.text = \"\"
+	_is_matching = true
+	_match_index = 0 
+
+
+func _input(event: InputEvent) -> void:
+	if not _is_matching:
+		return
+	
+	if event is InputEventKey and event.is_pressed():
+		if event.as_text_key_label().to_lower() == _word_to_match[_match_index]:
+			_match_index += 1
+			%WordLabel/MatchLabel.text += event.as_text_key_label().to_lower()
+			if _match_index == len(_word_to_match):
+				_is_matching = false
+				matched.emit()
+
+
+func _on_matched() -> void:
+	print(\"Matched\")
+"
+
+[node name="WordMatch" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_nej85")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WordLabel" type="Label" parent="CenterContainer"]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0.329412)
+layout_mode = 2
+text = "Привет"
+
+[node name="MatchLabel" type="Label" parent="CenterContainer/WordLabel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="matched" from="." to="." method="_on_matched"]

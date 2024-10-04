@@ -8,6 +8,10 @@ script/source = "extends Control
 
 const DRAGGABLE_SCENE : PackedScene = preload(\"res://GameScenes/draggable_image_piece.tscn\")
 
+signal completed
+signal piece_correctly_dropped
+signal piece_drop_missed
+
 @export
 var hit_radius : float = 20.0
 
@@ -49,13 +53,15 @@ func _on_piece_dropped(piece:TextureRect) -> void:
 		piece.global_position = %PuzzleImage.global_position + piece.position_at_image - piece.size/2
 		piece.draggable = false
 		piece.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		print(\"Ddkjfghkdxfkgbdsfkhgdjrk\")
+		piece_correctly_dropped.emit()
 	else:
 		piece.reparent(%PieceContainer)
+		piece_drop_missed.emit()
 	
 	_dragging = null
 	
 	if %PieceContainer.get_child_count() == 0:
+		completed.emit()
 		print(\"WIN\")
 
 

@@ -1,0 +1,90 @@
+[gd_scene load_steps=3 format=3 uid="uid://dl3picqpnqawh"]
+
+[sub_resource type="GDScript" id="GDScript_ujoq7"]
+resource_name = "main"
+script/source = "extends Node
+
+signal dance_finished
+signal correct_action_performed
+signal action_missed
+
+var actions_chain : Array[String] = []
+var is_dansing : bool = false
+
+var _expected_action_idx : int = 0
+
+
+func _ready() -> void:
+	begin_dance([\"W\", \"W\", \"S\", \"W\", \"D\"], 3.0)
+
+
+func begin_dance(actions:Array[String], action_time:float) -> void:
+	actions_chain = actions.duplicate()
+	_expected_action_idx = 0
+	is_dansing = true
+	$ActionTimer.wait_time = action_time
+	%ActionTimer.start()
+
+
+func get_expected_action() -> String:
+	if _expected_action_idx >= len(actions_chain):
+		return \"\"
+	
+	return actions_chain[_expected_action_idx]
+
+
+func _input(event: InputEvent) -> void:
+	if not is_dansing:
+		return
+	
+	if event is InputEventKey and event.is_pressed():
+		if event.is_action_pressed(actions_chain[_expected_action_idx]):
+			print(\"Match\")
+			_next_action()
+		else:
+			action_missed.emit()
+			print(\"Missed\")
+
+
+
+func _next_action() -> void:
+	correct_action_performed.emit()
+	_expected_action_idx += 1
+	
+	if _expected_action_idx == len(actions_chain):
+		print(\"Dance finished\")
+		is_dansing = false
+		dance_finished.emit()
+		%ActionTimer.stop()
+		return
+	
+	%ActionTimer.start()
+
+
+func _on_action_timer_timeout() -> void:
+	print(\"Timeout\")
+	_next_action()
+"
+
+[sub_resource type="GDScript" id="GDScript_c8vfx"]
+resource_name = "dfghsfgfsj"
+script/source = "extends Label
+
+
+func _process(delta: float) -> void:
+	text = \"%.3f\" % %ActionTimer.time_left
+"
+
+[node name="DanceScene" type="Node"]
+script = SubResource("GDScript_ujoq7")
+
+[node name="ActionTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+script = SubResource("GDScript_c8vfx")
+
+[connection signal="timeout" from="ActionTimer" to="." method="_on_action_timer_timeout"]

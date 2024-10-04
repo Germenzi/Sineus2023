@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=14 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
 [ext_resource type="PackedScene" uid="uid://b7yll0m41uka3" path="res://GameScenes/GameplayScenes/rune_stack.tscn" id="3_6ijm1"]
 [ext_resource type="PackedScene" uid="uid://bu65gtqjpyrsn" path="res://GameScenes/GameplayScenes/image_puzzle.tscn" id="3_bjft5"]
 [ext_resource type="PackedScene" uid="uid://cr7vpgr65aew4" path="res://UIScenes/game_over_screen_ui.tscn" id="5_ilx7b"]
+[ext_resource type="FontFile" uid="uid://bxhrdi4vewkis" path="res://assets/fonts/Kluchik Regular.otf" id="5_oq7gv"]
 [ext_resource type="PackedScene" uid="uid://7k76twct10lf" path="res://GameScenes/GameplayScenes/word_match.tscn" id="5_sen30"]
 [ext_resource type="PackedScene" uid="uid://bck1tuauc0uv4" path="res://UIScenes/game_completed_ui.tscn" id="6_orr7l"]
 [ext_resource type="Texture2D" uid="uid://rfphsbuojk1p" path="res://assets/images/bg.png" id="8_4g5qf"]
@@ -25,9 +26,10 @@ func _ready() -> void:
 
 func _on_dance_scene_action_missed() -> void:
 	var circle : Node2D = load(ScenesNamespace.EXTENDING_CIRCLE_SCENE_FILEPATH).instantiate()
-	circle.circle_color = Color.RED
+	circle.circle_color = Color.INDIAN_RED
+	%ExpectedDanceAction.add_child(circle)
 	circle.global_position = %ExpectedDanceAction.global_position + %ExpectedDanceAction.size / 2
-	add_child(circle)
+	circle.show_behind_parent = true
 	print(\"Dance miss\")
 
 
@@ -35,8 +37,9 @@ func _on_dance_scene_correct_action_performed() -> void:
 	_dance_score += 1
 	var circle : Node2D = load(ScenesNamespace.EXTENDING_CIRCLE_SCENE_FILEPATH).instantiate()
 	circle.circle_color = Color.WHITE
+	%ExpectedDanceAction.add_child(circle)
 	circle.global_position = %ExpectedDanceAction.global_position + %ExpectedDanceAction.size / 2
-	add_child(circle)
+	circle.show_behind_parent = true
 	print(\"Dance match\")
 
 
@@ -156,7 +159,8 @@ func begin_image_puzzle_pray() -> void:
 "
 
 [sub_resource type="LabelSettings" id="LabelSettings_s0nrc"]
-font_size = 50
+font = ExtResource("5_oq7gv")
+font_size = 100
 
 [sub_resource type="GDScript" id="GDScript_l5cll"]
 resource_name = "expected_action_label"

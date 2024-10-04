@@ -12,9 +12,6 @@
 resource_name = "main"
 script/source = "extends Node
 
-const DANCE_COUNT : int = 3
-const DANCE_ACTIONS_NUMBER : int = 8
-
 var _dance_score : int = 0
 
 var _current_dance : int = 0
@@ -82,8 +79,13 @@ func _on_rune_match_succeed() -> void:
 func _on_image_puzzle_completed() -> void:
 	$ShadingScreen.hide()
 	%ImagePuzzle.hide()
-	_game_completed()
-	print(\"YOU WIN HAHAHAAH\")
+	
+	if _dance_score / 18.0 > 0.8:
+		_game_completed()
+		print(\"YOU WIN HAHAHAAH\")
+	else:
+		_game_over()
+		print(\"BAD DANCE\")
 
 
 func _on_image_puzzle_piece_correctly_dropped() -> void:
@@ -110,6 +112,10 @@ func _game_completed() -> void:
 
 
 func _game_over() -> void:
+	%RuneMatch.hide()
+	%ImagePuzzle.hide()
+	%WordMatch.hide()
+	
 	$GameCompletedUI.show()
 	GuiTransitions.go_to(\"GameOverScreenUI\")
 

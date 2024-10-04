@@ -115,6 +115,7 @@ func success() -> void:
 
 func fail() -> void:
 	_is_matching = false
+	%FailTimer.stop()
 	failed.emit()
 
 

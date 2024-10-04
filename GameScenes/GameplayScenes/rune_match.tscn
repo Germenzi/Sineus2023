@@ -17,7 +17,8 @@ var _mouse_node : Control
 
 var _is_matching : bool = false
 var _is_dragging : bool = false
-#
+
+
 #func _ready() -> void:
 	#begin_match(preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\").instantiate(), 100000)
 
@@ -85,7 +86,8 @@ func _input(event: InputEvent) -> void:
 		_is_dragging = true
 	
 	if event.is_action_released(\"mouse_left\"):
-		fail()
+		_matching_point_idx = 0
+		_is_dragging = false
 
 
 func _draw() -> void:

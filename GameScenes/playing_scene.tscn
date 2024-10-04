@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
-[ext_resource type="PackedScene" uid="uid://drnx0su81cjuc" path="res://GameScenes/GameplayScenes/rune_match.tscn" id="2_sg0un"]
+[ext_resource type="PackedScene" uid="uid://b7yll0m41uka3" path="res://GameScenes/GameplayScenes/rune_stack.tscn" id="3_6ijm1"]
 [ext_resource type="PackedScene" uid="uid://bu65gtqjpyrsn" path="res://GameScenes/GameplayScenes/image_puzzle.tscn" id="3_bjft5"]
 [ext_resource type="PackedScene" uid="uid://cr7vpgr65aew4" path="res://UIScenes/game_over_screen_ui.tscn" id="5_ilx7b"]
 [ext_resource type="PackedScene" uid="uid://7k76twct10lf" path="res://GameScenes/GameplayScenes/word_match.tscn" id="5_sen30"]
@@ -61,13 +61,13 @@ func _on_word_match_failed() -> void:
 
 
 
+func _on_rune_stack_failed() -> void:
+	_game_over()
 
 
-
-
-func _on_rune_match_succeed() -> void:
+func _on_rune_stack_succeed() -> void:
 	$ShadingScreen.hide()
-	%RuneMatch.hide()
+	%RuneStack.hide()
 	_next_dance()
 
 
@@ -108,7 +108,7 @@ func _next_dance() -> void:
 
 
 func _game_completed() -> void:
-	%RuneMatch.hide()
+	%RuneStack.hide()
 	%ImagePuzzle.hide()
 	%WordMatch.hide()
 	
@@ -117,7 +117,7 @@ func _game_completed() -> void:
 
 
 func _game_over() -> void:
-	%RuneMatch.hide()
+	%RuneStack.hide()
 	%ImagePuzzle.hide()
 	%WordMatch.hide()
 	
@@ -133,8 +133,12 @@ func begin_word_pray() -> void:
 
 func begin_rune_pray() -> void:
 	$ShadingScreen.show()
-	%RuneMatch.show()
-	%RuneMatch.begin_match(preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\").instantiate())
+	%RuneStack.show()
+	var t = preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\")
+	%RuneStack.begin_runes(
+		[t.instantiate(), t.instantiate()],
+		10.0
+	)
 
 
 func begin_image_puzzle_pray() -> void:
@@ -198,11 +202,11 @@ color = Color(0, 0, 0, 0.294118)
 [node name="DanceScene" parent="." instance=ExtResource("1_bdmix")]
 unique_name_in_owner = true
 
-[node name="RuneMatch" parent="." instance=ExtResource("2_sg0un")]
+[node name="ImagePuzzle" parent="." instance=ExtResource("3_bjft5")]
 unique_name_in_owner = true
 visible = false
 
-[node name="ImagePuzzle" parent="." instance=ExtResource("3_bjft5")]
+[node name="RuneStack" parent="." instance=ExtResource("3_6ijm1")]
 unique_name_in_owner = true
 visible = false
 
@@ -263,11 +267,12 @@ stretch_mode = 5
 [connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
 [connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]
 [connection signal="dance_finished" from="DanceScene" to="." method="_on_dance_scene_dance_finished"]
-[connection signal="succeed" from="RuneMatch" to="." method="_on_rune_match_succeed"]
 [connection signal="completed" from="ImagePuzzle" to="." method="_on_image_puzzle_completed"]
 [connection signal="failed" from="ImagePuzzle" to="." method="_on_image_puzzle_failed"]
 [connection signal="piece_correctly_dropped" from="ImagePuzzle" to="." method="_on_image_puzzle_piece_correctly_dropped"]
 [connection signal="piece_drop_missed" from="ImagePuzzle" to="." method="_on_image_puzzle_piece_drop_missed"]
+[connection signal="failed" from="RuneStack" to="." method="_on_rune_stack_failed"]
+[connection signal="succeed" from="RuneStack" to="." method="_on_rune_stack_succeed"]
 [connection signal="failed" from="WordMatch" to="." method="_on_word_match_failed"]
 [connection signal="matched" from="WordMatch" to="." method="_on_word_match_matched"]
 [connection signal="again_button_pressed" from="GUI/GameOverScreenUI" to="GUI" method="_on_game_over_screen_ui_again_button_pressed"]

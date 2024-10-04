@@ -1,22 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://b7yll0m41uka3"]
+[gd_scene load_steps=3 format=3 uid="uid://b7yll0m41uka3"]
 
 [sub_resource type="GDScript" id="GDScript_bp7to"]
 resource_name = "main"
 script/source = "extends Control
 
-signal success
-signal fail
+signal succeed
+signal failed
 
 
-func _ready() -> void:
-	var t = preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\")
-	begin_runes(
-		[t.instantiate(), t.instantiate(), t.instantiate(), t.instantiate()],
-		10.0
-	)
+#func _ready() -> void:
+	#var t = preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\")
+	#begin_runes(
+		#[t.instantiate(), t.instantiate(), t.instantiate(), t.instantiate()],
+		#10.0
+	#)
 
 
-func begin_runes(runes:Array[Control], time:float) -> void:
+var _completed_runes : int = 0
+
+
+func begin_runes(runes:Array, time:float) -> void:
 	for i in runes:
 		var rune_match : Control = load(ScenesNamespace.RUNE_MATCH_SCENE_FILEPATH).instantiate()
 		%Runes.add_child(rune_match)
@@ -26,14 +29,47 @@ func begin_runes(runes:Array[Control], time:float) -> void:
 		rune_label.self_modulate.a = 0.4
 		rune_match.succeed.connect(_on_rune_completed.bind(rune_match, rune_label))
 		%Words.add_child(rune_label)
+		_completed_runes = 0
+	
+	%FailTimer.wait_time = time
+	%FailTimer.start()
 
 
 func _on_fail_timer_timeout() -> void:
-	pass # Replace with function body.
+	fail()
 
 
 func _on_rune_completed(rune_match:Control, rune_word:Label) -> void:
+	_completed_runes += 1
 	rune_word.self_modulate.a = 1.0
+	
+	if _completed_runes == %Runes.get_child_count():
+		success()
+
+
+func success() -> void:
+	succeed.emit()
+	%FailTimer.stop()
+
+
+func fail() -> void:
+	failed.emit()
+	%FailTimer.stop()
+"
+
+[sub_resource type="GDScript" id="GDScript_62kxw"]
+resource_name = "sfgajyejxh"
+script/source = "extends Label
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	text = \"%.3f\" % %FailTimer.time_left
 "
 
 [node name="RuneStack" type="Control"]
@@ -74,5 +110,13 @@ theme_override_constants/separation = 2
 
 [node name="FailTimer" type="Timer" parent="."]
 unique_name_in_owner = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1092.0
+offset_top = 36.0
+offset_right = 1220.0
+offset_bottom = 85.0
+script = SubResource("GDScript_62kxw")
 
 [connection signal="timeout" from="FailTimer" to="." method="_on_fail_timer_timeout"]

@@ -1,0 +1,113 @@
+[gd_scene load_steps=2 format=3 uid="uid://drnx0su81cjuc"]
+
+[sub_resource type="GDScript" id="GDScript_uf2wm"]
+resource_name = "main"
+script/source = "extends Node2D
+
+signal failed
+signal succeed
+
+@export_range(1.0, 500.0)
+var match_radius : float = 20.0
+
+var _key_points_markers : Array[Marker2D] = []
+var _matching_point_idx : int = 0
+var _mouse_node : Marker2D
+
+var _is_matching : bool = false
+
+func _ready() -> void:
+	for i in get_children().filter(func(i:Node): return i is Marker2D):
+		_key_points_markers.append(i)
+	assert(not _key_points_markers.is_empty())
+	begin_match()
+
+
+func begin_match() -> void:
+	_matching_point_idx = 0
+	_is_matching = true
+
+
+func _process(delta: float) -> void:
+	queue_redraw()
+	
+	if not _is_matching:
+		return
+	
+	var mouse_pos : Vector2 = get_local_mouse_position()
+	var min_length : float = -1.0
+	var min_idx : int = 100000
+	
+	_mouse_node = null
+	
+	for i:int in range(_matching_point_idx, len(_key_points_markers)):
+		var marker : Marker2D = _key_points_markers[i]
+		var dist_to_mouse : float = (mouse_pos-marker.position).length()
+		if (dist_to_mouse < match_radius) and (min_length < 0.0 or i < min_idx) :
+			_mouse_node = marker
+			min_length = dist_to_mouse
+			min_idx = i
+
+
+func _input(event: InputEvent) -> void:
+	if not _is_matching:
+		return
+	
+	if event.is_action_pressed(\"mouse_left\"):
+		if _mouse_node != _key_points_markers[_matching_point_idx]:
+			_is_matching = false
+			failed.emit()
+			return
+		
+		_matching_point_idx += 1
+		
+		if _matching_point_idx == len(_key_points_markers):
+			succeed.emit()
+			_is_matching = false
+			return
+
+
+func _draw() -> void:
+	for i in _key_points_markers:
+		draw_circle(i.position, 5.0, Color.RED)
+	
+	for i:int in range(_matching_point_idx):
+		var marker : Marker2D = _key_points_markers[i]
+		draw_circle(marker.position, 5.0, Color.GREEN)
+	
+	#if _mouse_node != null:
+		#draw_line(_mouse_node.position, get_local_mouse_position(), Color.RED)
+	
+	for i:int in range(1, len(_key_points_markers)):
+		draw_line(_key_points_markers[i-1].position, _key_points_markers[i].position, Color.RED)
+
+
+func _on_failed() -> void:
+	print(\"FAIL\")
+
+
+func _on_succeed() -> void:
+	print(\"SUCCESS\")
+"
+
+[node name="RuneMatch" type="Node2D"]
+script = SubResource("GDScript_uf2wm")
+match_radius = 60.459
+
+[node name="P1" type="Marker2D" parent="."]
+position = Vector2(141, 105)
+
+[node name="P2" type="Marker2D" parent="."]
+position = Vector2(231, 208)
+
+[node name="P3" type="Marker2D" parent="."]
+position = Vector2(229, 345)
+
+[node name="P4" type="Marker2D" parent="."]
+position = Vector2(231, 208)
+
+[node name="P5" type="Marker2D" parent="."]
+position = Vector2(333, 107)
+
+[connection signal="failed" from="." to="." method="_on_failed"]
+[connection signal="succeed" from="." to="." method="_on_succeed"]

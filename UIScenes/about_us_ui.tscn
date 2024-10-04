@@ -1,0 +1,107 @@
+[gd_scene load_steps=3 format=3 uid="uid://ysya4p0qsljl"]
+
+[ext_resource type="LabelSettings" uid="uid://csh35wxvi1wrn" path="res://UIScenes/UIAssets/AboutUsScreenNamesLabelSettings.tres" id="1_4rllp"]
+
+[sub_resource type="GDScript" id="GDScript_c1ig6"]
+resource_name = "main"
+script/source = "extends Control
+
+signal back_button_pressed
+
+
+func _on_back_button_pressed() -> void:
+	back_button_pressed.emit()
+"
+
+[node name="AboutUsUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_c1ig6")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 30
+text = "  Назад  "
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="NameLabel1" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Name1"
+label_settings = ExtResource("1_4rllp")
+
+[node name="RoleLabel1" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Role1"
+label_settings = ExtResource("1_4rllp")
+
+[node name="NameLabel2" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Name2"
+label_settings = ExtResource("1_4rllp")
+
+[node name="RoleLabel2" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Role2"
+label_settings = ExtResource("1_4rllp")
+horizontal_alignment = 2
+
+[node name="NameLabel3" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Name3"
+label_settings = ExtResource("1_4rllp")
+
+[node name="RoleLabel3" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Role3"
+label_settings = ExtResource("1_4rllp")
+
+[node name="NameLabel4" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Name4"
+label_settings = ExtResource("1_4rllp")
+
+[node name="RoleLabel4" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Role4"
+label_settings = ExtResource("1_4rllp")
+
+[node name="NameLabel5" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Name5"
+label_settings = ExtResource("1_4rllp")
+
+[node name="RoleLabel5" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Role5"
+label_settings = ExtResource("1_4rllp")
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

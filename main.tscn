@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://3k8uu88bnrmw"]
+
+[ext_resource type="PackedScene" uid="uid://dyx3t4ur7smqh" path="res://UIScenes/main_menu_ui.tscn" id="1_dr412"]
+[ext_resource type="PackedScene" uid="uid://ysya4p0qsljl" path="res://UIScenes/about_us_ui.tscn" id="2_bdxla"]
+[ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="2_tmhw6"]
+
+[sub_resource type="GDScript" id="GDScript_v4jg8"]
+resource_name = "main"
+script/source = "extends Node
+
+
+func _ready() -> void:
+	pass
+
+
+func _on_main_menu_ui_about_us_button_pressed() -> void:
+	if GuiTransitions.in_transition():
+		return
+	
+	GuiTransitions.go_to(\"AboutUsUI\")
+
+
+func _on_main_menu_ui_play_button_pressed() -> void:
+	pass
+
+
+func _on_main_menu_ui_quit_button_pressed() -> void:
+	get_tree().quit()
+
+
+func _on_main_menu_ui_sound_button_switched(enabled: bool) -> void:
+	pass
+
+
+
+
+func _on_about_us_ui_back_button_pressed() -> void:
+	if GuiTransitions.in_transition():
+		return
+	
+	GuiTransitions.go_to(\"MainMenuUI\")
+"
+
+[node name="Main" type="Node"]
+script = SubResource("GDScript_v4jg8")
+
+[node name="MainMenuUI" parent="." instance=ExtResource("1_dr412")]
+
+[node name="GuiTransition" type="Node" parent="MainMenuUI"]
+script = ExtResource("2_tmhw6")
+layout = NodePath("..")
+
+[node name="AboutUsUI" parent="." instance=ExtResource("2_bdxla")]
+visible = false
+
+[node name="GuiTransition" type="Node" parent="AboutUsUI"]
+script = ExtResource("2_tmhw6")
+layout = NodePath("..")
+
+[connection signal="about_us_button_pressed" from="MainMenuUI" to="." method="_on_main_menu_ui_about_us_button_pressed"]
+[connection signal="play_button_pressed" from="MainMenuUI" to="." method="_on_main_menu_ui_play_button_pressed"]
+[connection signal="quit_button_pressed" from="MainMenuUI" to="." method="_on_main_menu_ui_quit_button_pressed"]
+[connection signal="sound_button_switched" from="MainMenuUI" to="." method="_on_main_menu_ui_sound_button_switched"]
+[connection signal="back_button_pressed" from="AboutUsUI" to="." method="_on_about_us_ui_back_button_pressed"]

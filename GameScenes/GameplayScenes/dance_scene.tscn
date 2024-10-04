@@ -14,8 +14,8 @@ var is_dansing : bool = false
 var _expected_action_idx : int = 0
 
 
-func _ready() -> void:
-	begin_dance([\"W\", \"W\", \"S\", \"W\", \"D\"], 3.0)
+#func _ready() -> void:
+	#begin_dance([\"W\", \"W\", \"S\", \"W\", \"D\"], 3.0)
 
 
 func begin_dance(actions:Array, action_time:float) -> void:

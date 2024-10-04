@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=11 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
@@ -107,7 +107,11 @@ func _next_dance() -> void:
 
 
 func _game_completed() -> void:
-	$GameOverScreenUI.show()
+	%RuneMatch.hide()
+	%ImagePuzzle.hide()
+	%WordMatch.hide()
+	
+	%GameOverScreenUI.show()
 	GuiTransitions.go_to(\"GameCompletedUI\")
 
 
@@ -116,7 +120,7 @@ func _game_over() -> void:
 	%ImagePuzzle.hide()
 	%WordMatch.hide()
 	
-	$GameCompletedUI.show()
+	%GameCompletedUI.show()
 	GuiTransitions.go_to(\"GameOverScreenUI\")
 
 
@@ -129,7 +133,7 @@ func begin_word_pray() -> void:
 func begin_rune_pray() -> void:
 	$ShadingScreen.show()
 	%RuneMatch.show()
-	%RuneMatch.begin_match(preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\").instantiate(), 40.0)
+	%RuneMatch.begin_match(preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\").instantiate(), 10.0)
 
 
 func begin_image_puzzle_pray() -> void:
@@ -145,6 +149,37 @@ script/source = "extends Label
 
 func _process(delta: float) -> void:
 	text = \"%s\" % %DanceScene.get_expected_action()
+"
+
+[sub_resource type="GDScript" id="GDScript_1li5q"]
+resource_name = "gui_controller"
+script/source = "extends CanvasLayer
+
+
+func _on_game_over_screen_ui_again_button_pressed() -> void:
+	get_tree().reload_current_scene()
+
+
+func _on_game_over_screen_ui_main_menu_button_pressed() -> void:
+	get_tree().change_scene_to_file(ScenesNamespace.MAIN_MENU_SCENE_FILEPATH)
+
+
+func _on_game_over_screen_ui_quit_button_pressed() -> void:
+	get_tree().quit()
+
+
+
+
+
+
+
+
+func _on_game_completed_ui_main_menu_button_pressed() -> void:
+	get_tree().change_scene_to_file(ScenesNamespace.MAIN_MENU_SCENE_FILEPATH)
+
+
+func _on_game_completed_ui_quit_button_pressed() -> void:
+	get_tree().quit()
 "
 
 [node name="PlayingScene" type="Node"]
@@ -192,17 +227,22 @@ size_flags_horizontal = 0
 size_flags_vertical = 8
 script = SubResource("GDScript_l5cll")
 
-[node name="GameOverScreenUI" parent="." instance=ExtResource("5_ilx7b")]
+[node name="GUI" type="CanvasLayer" parent="."]
+script = SubResource("GDScript_1li5q")
+
+[node name="GameOverScreenUI" parent="GUI" instance=ExtResource("5_ilx7b")]
+unique_name_in_owner = true
 visible = false
 
-[node name="GuiTransition" type="Node" parent="GameOverScreenUI"]
+[node name="GuiTransition" type="Node" parent="GUI/GameOverScreenUI"]
 script = ExtResource("1_rwten")
 layout = NodePath("..")
 
-[node name="GameCompletedUI" parent="." instance=ExtResource("6_orr7l")]
+[node name="GameCompletedUI" parent="GUI" instance=ExtResource("6_orr7l")]
+unique_name_in_owner = true
 visible = false
 
-[node name="GuiTransition" type="Node" parent="GameCompletedUI"]
+[node name="GuiTransition" type="Node" parent="GUI/GameCompletedUI"]
 script = ExtResource("1_rwten")
 layout = NodePath("..")
 
@@ -217,3 +257,8 @@ layout = NodePath("..")
 [connection signal="piece_drop_missed" from="ImagePuzzle" to="." method="_on_image_puzzle_piece_drop_missed"]
 [connection signal="failed" from="WordMatch" to="." method="_on_word_match_failed"]
 [connection signal="matched" from="WordMatch" to="." method="_on_word_match_matched"]
+[connection signal="again_button_pressed" from="GUI/GameOverScreenUI" to="GUI" method="_on_game_over_screen_ui_again_button_pressed"]
+[connection signal="main_menu_button_pressed" from="GUI/GameOverScreenUI" to="GUI" method="_on_game_over_screen_ui_main_menu_button_pressed"]
+[connection signal="quit_button_pressed" from="GUI/GameOverScreenUI" to="GUI" method="_on_game_over_screen_ui_quit_button_pressed"]
+[connection signal="main_menu_button_pressed" from="GUI/GameCompletedUI" to="GUI" method="_on_game_completed_ui_main_menu_button_pressed"]
+[connection signal="quit_button_pressed" from="GUI/GameCompletedUI" to="GUI" method="_on_game_completed_ui_quit_button_pressed"]

@@ -1,4 +1,20 @@
-[gd_scene load_steps=2 format=3 uid="uid://bck1tuauc0uv4"]
+[gd_scene load_steps=3 format=3 uid="uid://bck1tuauc0uv4"]
+
+[sub_resource type="GDScript" id="GDScript_t60aa"]
+resource_name = "main"
+script/source = "extends Control
+
+signal main_menu_button_pressed
+signal quit_button_pressed
+
+
+func _on_main_menu_button_pressed() -> void:
+	main_menu_button_pressed.emit()
+
+
+func _on_quit_button_pressed() -> void:
+	quit_button_pressed.emit()
+"
 
 [sub_resource type="LabelSettings" id="LabelSettings_b1koa"]
 font_size = 50
@@ -10,6 +26,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = SubResource("GDScript_t60aa")
 
 [node name="ShadingScreen" type="ColorRect" parent="."]
 layout_mode = 1
@@ -42,10 +59,13 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 5
 
-[node name="Button" type="Button" parent="ShadingScreen/CenterContainer/VBoxContainer/VBoxContainer"]
+[node name="MainMenuButton" type="Button" parent="ShadingScreen/CenterContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "--Главное меню--"
 
-[node name="Button2" type="Button" parent="ShadingScreen/CenterContainer/VBoxContainer/VBoxContainer"]
+[node name="QuitButton" type="Button" parent="ShadingScreen/CenterContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "--Выход--"
+
+[connection signal="pressed" from="ShadingScreen/CenterContainer/VBoxContainer/VBoxContainer/MainMenuButton" to="." method="_on_main_menu_button_pressed"]
+[connection signal="pressed" from="ShadingScreen/CenterContainer/VBoxContainer/VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]

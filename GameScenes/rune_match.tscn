@@ -68,6 +68,9 @@ func _input(event: InputEvent) -> void:
 
 
 func _draw() -> void:
+	if not _is_matching:
+		return
+	
 	for i in _key_points_markers:
 		draw_circle(i.position, 5.0, Color.RED)
 	

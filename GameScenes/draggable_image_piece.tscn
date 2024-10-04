@@ -1,0 +1,59 @@
+[gd_scene load_steps=3 format=3 uid="uid://dudha3pd4tj4f"]
+
+[ext_resource type="Texture2D" uid="uid://b5bwlyolkwol2" path="res://icon.svg" id="1_iw4o8"]
+
+[sub_resource type="GDScript" id="GDScript_ibdwb"]
+resource_name = "main"
+script/source = "extends Control
+
+signal dragged
+signal dropped
+
+var _under_mouse : bool = false
+var _in_drag : bool = false
+
+var draggable : bool = true
+var position_at_image : Vector2
+
+func _on_mouse_entered() -> void:
+	_under_mouse = true
+
+
+func _on_mouse_exited() -> void:
+	_under_mouse = false
+
+
+func _input(event: InputEvent) -> void:
+	if not draggable:
+		return
+	
+	if not _under_mouse:
+		return
+	
+	if event.is_action_pressed(\"mouse_left\"):
+		if _in_drag:
+			return
+		
+		_in_drag = true
+		dragged.emit()
+	
+	if event.is_action_released(\"mouse_left\"):
+		if not _in_drag:
+			return
+		
+		_in_drag = false
+		dropped.emit()
+"
+
+[node name="DraggableImagePiece" type="TextureRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_iw4o8")
+stretch_mode = 5
+script = SubResource("GDScript_ibdwb")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

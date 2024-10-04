@@ -1,0 +1,116 @@
+[gd_scene load_steps=3 format=3 uid="uid://bu65gtqjpyrsn"]
+
+[ext_resource type="Texture2D" uid="uid://b5bwlyolkwol2" path="res://icon.svg" id="1_yy65s"]
+
+[sub_resource type="GDScript" id="GDScript_w2a63"]
+resource_name = "main"
+script/source = "extends Control
+
+const DRAGGABLE_SCENE : PackedScene = preload(\"res://GameScenes/draggable_image_piece.tscn\")
+
+@export
+var hit_radius : float = 20.0
+
+var _dragging : Control 
+
+func _ready() -> void:
+	for i in range(4):
+		var inst : Control = DRAGGABLE_SCENE.instantiate()
+		inst.texture = preload(\"res://icon.svg\")
+		%PieceContainer.add_child(inst)
+		
+		inst.dragged.connect(_on_piece_dragged.bind(inst))
+		inst.dropped.connect(_on_piece_dropped.bind(inst))
+		
+		inst.modulate = Color(randf(), randf(), randf())
+		inst.position_at_image = Vector2(%PuzzleImage.size.x * randf(), %PuzzleImage.size.y * randf())
+
+
+func _process(delta: float) -> void:
+	queue_redraw()
+	if _dragging != null:
+		_dragging.position = get_local_mouse_position() - _dragging.size / 2
+
+
+func _on_piece_dragged(piece:TextureRect) -> void:
+	if _dragging != null:
+		return
+	
+	piece.reparent(%DraggingContainer)
+	_dragging = piece
+
+
+func _on_piece_dropped(piece:TextureRect) -> void:
+	if _dragging == null:
+		return
+	
+	if (piece.global_position + piece.size/2 - %PuzzleImage.global_position - piece.position_at_image).length() < hit_radius:
+		piece.reparent(%CorrectlyDroppedPieces)
+		piece.global_position = %PuzzleImage.global_position + piece.position_at_image - piece.size/2
+		piece.draggable = false
+		piece.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		print(\"Ddkjfghkdxfkgbdsfkhgdjrk\")
+	else:
+		piece.reparent(%PieceContainer)
+	
+	_dragging = null
+	
+	if %PieceContainer.get_child_count() == 0:
+		print(\"WIN\")
+
+
+func _draw() -> void:
+	for i:TextureRect in %PieceContainer.get_children():
+		draw_circle((%PuzzleImage.global_position + i.position_at_image)-global_position, hit_radius, Color.RED)
+"
+
+[node name="ImagePuzzle" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_w2a63")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PuzzleImage" type="TextureRect" parent="CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("1_yy65s")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="PieceContainer" type="HBoxContainer" parent="MarginContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 10
+alignment = 1
+
+[node name="DraggingContainer" type="Node" parent="."]
+unique_name_in_owner = true
+
+[node name="CorrectlyDroppedPieces" type="Node" parent="."]
+unique_name_in_owner = true

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=15 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://7k76twct10lf" path="res://GameScenes/GameplayScenes/word_match.tscn" id="5_sen30"]
 [ext_resource type="PackedScene" uid="uid://bck1tuauc0uv4" path="res://UIScenes/game_completed_ui.tscn" id="6_orr7l"]
 [ext_resource type="Texture2D" uid="uid://rfphsbuojk1p" path="res://assets/images/bg.png" id="8_4g5qf"]
+[ext_resource type="Texture2D" uid="uid://c7kr6610a66eo" path="res://assets/images/character.png" id="10_3b5be"]
 
 [sub_resource type="GDScript" id="GDScript_7a7so"]
 resource_name = "main"
@@ -212,7 +213,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.294118)
+color = Color(0, 0, 0, 0.666667)
 
 [node name="DanceScene" parent="." instance=ExtResource("1_bdmix")]
 unique_name_in_owner = true
@@ -273,7 +274,7 @@ layout = NodePath("..")
 [node name="Background" type="CanvasLayer" parent="."]
 layer = -2
 
-[node name="TextureRect" type="TextureRect" parent="Background"]
+[node name="BackgroundImage" type="TextureRect" parent="Background"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -282,6 +283,16 @@ grow_vertical = 2
 texture = ExtResource("8_4g5qf")
 expand_mode = 5
 stretch_mode = 6
+
+[node name="TextureRect" type="TextureRect" parent="Background/BackgroundImage"]
+layout_mode = 0
+offset_left = 504.0
+offset_top = 353.0
+offset_right = 770.0
+offset_bottom = 697.0
+texture = ExtResource("10_3b5be")
+expand_mode = 1
+stretch_mode = 5
 
 [connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
 [connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]

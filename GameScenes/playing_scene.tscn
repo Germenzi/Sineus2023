@@ -1,3 +1,190 @@
-[gd_scene format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=7 format=3 uid="uid://cira0qedb2jbr"]
+
+[ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/dance_scene.tscn" id="1_bdmix"]
+[ext_resource type="PackedScene" uid="uid://drnx0su81cjuc" path="res://GameScenes/rune_match.tscn" id="2_sg0un"]
+[ext_resource type="PackedScene" uid="uid://bu65gtqjpyrsn" path="res://GameScenes/image_puzzle.tscn" id="3_bjft5"]
+[ext_resource type="PackedScene" uid="uid://7k76twct10lf" path="res://GameScenes/word_match.tscn" id="5_sen30"]
+
+[sub_resource type="GDScript" id="GDScript_7a7so"]
+resource_name = "main"
+script/source = "extends Node
+
+const DANCE_COUNT : int = 3
+const DANCE_ACTIONS_NUMBER : int = 8
+
+var _dance_score : int = 0
+
+var _current_dance : int = 2
+
+
+func _ready() -> void:
+	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\"], 2.0)
+
+
+
+func _on_dance_scene_action_missed() -> void:
+	print(\"Dance miss\")
+
+
+func _on_dance_scene_correct_action_performed() -> void:
+	_dance_score += 1
+	print(\"Dance match\")
+
+
+func _on_dance_scene_dance_finished() -> void:
+	print(\"Dance finished\")
+	print(\"Dance score: %d\" % _dance_score)
+	GuiTransitions.show(\"ShadingScreen\")
+	if _current_dance == 0:
+		begin_word_pray()
+	elif _current_dance == 1:
+		begin_rune_pray()
+	else:
+		begin_image_puzzle_pray()
+
+
+
+
+func _on_word_match_matched() -> void:
+	$ShadingScreen.hide()
+	%WordMatch.hide()
+	_next_dance()
+
+
+
+func _on_word_match_failed() -> void:
+	_game_over()
+
+
+
+
+
+func _on_rune_match_failed() -> void:
+	print(\"Rune failed\")
+	_game_over()
+
+
+func _on_rune_match_succeed() -> void:
+	$ShadingScreen.hide()
+	%RuneMatch.hide()
+	_next_dance()
+
+
+
+
+
+
+
+
+func _on_image_puzzle_completed() -> void:
+	$ShadingScreen.hide()
+	%ImagePuzzle.hide()
+	print(\"YOU WIN HAHAHAAH\")
+
+
+func _on_image_puzzle_piece_correctly_dropped() -> void:
+	print(\"Hahah norm popal\")
+
+
+func _on_image_puzzle_piece_drop_missed() -> void:
+	print(\"Hahah ne popal\")
+
+
+func _on_image_puzzle_failed() -> void:
+	_game_over()
+
+
+
+func _next_dance() -> void:
+	_current_dance += 1
+	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\"], 2.0)
+
+
+
+func _game_over() -> void:
+	get_tree().quit()
+
+
+func begin_word_pray() -> void:
+	$ShadingScreen.show()
+	%WordMatch.show()
+	%WordMatch.begin(\"прив\", 5.0)
+
+
+func begin_rune_pray() -> void:
+	$ShadingScreen.show()
+	%RuneMatch.show()
+	%RuneMatch.begin_match(preload(\"res://GameScenes/rune_image_puzzle.tscn\").instantiate(), 40.0)
+
+
+func begin_image_puzzle_pray() -> void:
+	$ShadingScreen.show()
+	%ImagePuzzle.show()
+	%ImagePuzzle.begin(preload(\"res://GameScenes/image_puzzle_task.tscn\").instantiate(), 10.0)
+"
+
+[sub_resource type="GDScript" id="GDScript_l5cll"]
+resource_name = "expected_action_label"
+script/source = "extends Label
+
+
+func _process(delta: float) -> void:
+	text = \"%s\" % %DanceScene.get_expected_action()
+"
 
 [node name="PlayingScene" type="Node"]
+script = SubResource("GDScript_7a7so")
+
+[node name="ShadingScreen" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.294118)
+
+[node name="DanceScene" parent="." instance=ExtResource("1_bdmix")]
+unique_name_in_owner = true
+
+[node name="RuneMatch" parent="." instance=ExtResource("2_sg0un")]
+unique_name_in_owner = true
+visible = false
+
+[node name="ImagePuzzle" parent="." instance=ExtResource("3_bjft5")]
+unique_name_in_owner = true
+visible = false
+
+[node name="WordMatch" parent="." instance=ExtResource("5_sen30")]
+unique_name_in_owner = true
+visible = false
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="ExpectedDanceAction" type="Label" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+script = SubResource("GDScript_l5cll")
+
+[connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
+[connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]
+[connection signal="dance_finished" from="DanceScene" to="." method="_on_dance_scene_dance_finished"]
+[connection signal="failed" from="RuneMatch" to="." method="_on_rune_match_failed"]
+[connection signal="succeed" from="RuneMatch" to="." method="_on_rune_match_succeed"]
+[connection signal="completed" from="ImagePuzzle" to="." method="_on_image_puzzle_completed"]
+[connection signal="failed" from="ImagePuzzle" to="." method="_on_image_puzzle_failed"]
+[connection signal="piece_correctly_dropped" from="ImagePuzzle" to="." method="_on_image_puzzle_piece_correctly_dropped"]
+[connection signal="piece_drop_missed" from="ImagePuzzle" to="." method="_on_image_puzzle_piece_drop_missed"]
+[connection signal="failed" from="WordMatch" to="." method="_on_word_match_failed"]
+[connection signal="matched" from="WordMatch" to="." method="_on_word_match_matched"]

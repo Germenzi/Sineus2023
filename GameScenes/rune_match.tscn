@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://drnx0su81cjuc"]
+[gd_scene load_steps=3 format=3 uid="uid://drnx0su81cjuc"]
 
 [sub_resource type="GDScript" id="GDScript_uf2wm"]
 resource_name = "main"
-script/source = "extends Node2D
+script/source = "extends Control
 
 signal failed
 signal succeed
@@ -10,22 +10,35 @@ signal succeed
 @export_range(1.0, 500.0)
 var match_radius : float = 20.0
 
-var _key_points_markers : Array[Marker2D] = []
+var _rune_match_instance : Control
+var _key_points_markers : Array[Control] = []
 var _matching_point_idx : int = 0
-var _mouse_node : Marker2D
+var _mouse_node : Control
 
 var _is_matching : bool = false
 
-func _ready() -> void:
-	for i in get_children().filter(func(i:Node): return i is Marker2D):
+
+#func _ready() -> void:
+	#begin_match(preload(\"res://GameScenes/rune_image_puzzle.tscn\").instantiate())
+
+
+func begin_match(rune_match_puzzle:Control, time:float) -> void:
+	if _rune_match_instance != null:
+		_rune_match_instance.queue_redraw()
+		$CenterContainer.remove_child(_rune_match_instance)
+	
+	$CenterContainer.add_child(rune_match_puzzle)
+	_rune_match_instance = rune_match_puzzle
+	
+	_key_points_markers = []
+	for i in _rune_match_instance.get_children():
 		_key_points_markers.append(i)
-	assert(not _key_points_markers.is_empty())
-	begin_match()
-
-
-func begin_match() -> void:
+	 
 	_matching_point_idx = 0
 	_is_matching = true
+	
+	%FailTimer.wait_time = time
+	%FailTimer.start()
 
 
 func _process(delta: float) -> void:
@@ -34,15 +47,15 @@ func _process(delta: float) -> void:
 	if not _is_matching:
 		return
 	
-	var mouse_pos : Vector2 = get_local_mouse_position()
+	var mouse_pos : Vector2 = get_global_mouse_position()
 	var min_length : float = -1.0
 	var min_idx : int = 100000
 	
 	_mouse_node = null
 	
 	for i:int in range(_matching_point_idx, len(_key_points_markers)):
-		var marker : Marker2D = _key_points_markers[i]
-		var dist_to_mouse : float = (mouse_pos-marker.position).length()
+		var marker : Control = _key_points_markers[i]
+		var dist_to_mouse : float = (mouse_pos-marker.global_position).length()
 		if (dist_to_mouse < match_radius) and (min_length < 0.0 or i < min_idx) :
 			_mouse_node = marker
 			min_length = dist_to_mouse
@@ -55,15 +68,13 @@ func _input(event: InputEvent) -> void:
 	
 	if event.is_action_pressed(\"mouse_left\"):
 		if _mouse_node != _key_points_markers[_matching_point_idx]:
-			_is_matching = false
-			failed.emit()
+			fail()
 			return
 		
 		_matching_point_idx += 1
 		
 		if _matching_point_idx == len(_key_points_markers):
-			succeed.emit()
-			_is_matching = false
+			success()
 			return
 
 
@@ -72,45 +83,89 @@ func _draw() -> void:
 		return
 	
 	for i in _key_points_markers:
-		draw_circle(i.position, 5.0, Color.RED)
+		draw_circle(i.global_position-global_position, 5.0, Color.RED)
 	
 	for i:int in range(_matching_point_idx):
-		var marker : Marker2D = _key_points_markers[i]
-		draw_circle(marker.position, 5.0, Color.GREEN)
+		var marker : Control = _key_points_markers[i]
+		draw_circle(marker.global_position-global_position, 5.0, Color.GREEN)
 	
-	#if _mouse_node != null:
-		#draw_line(_mouse_node.position, get_local_mouse_position(), Color.RED)
+	if _mouse_node != null:
+		draw_line(_mouse_node.global_position-global_position, get_local_mouse_position(), Color.RED)
 	
 	for i:int in range(1, len(_key_points_markers)):
-		draw_line(_key_points_markers[i-1].position, _key_points_markers[i].position, Color.RED)
+		draw_line(_key_points_markers[i-1].global_position-global_position, _key_points_markers[i].global_position-global_position, Color.RED)
 
 
 func _on_failed() -> void:
-	print(\"FAIL\")
+	pass
+	#print(\"FAIL\")
 
 
 func _on_succeed() -> void:
-	print(\"SUCCESS\")
+	pass
+	#print(\"SUCCESS\")
+
+
+
+func success() -> void:
+	_is_matching = false
+	%FailTimer.stop()
+	succeed.emit()
+
+
+func fail() -> void:
+	_is_matching = false
+	failed.emit()
+
+
+func _on_fail_timer_timeout() -> void:
+	fail()
 "
 
-[node name="RuneMatch" type="Node2D"]
+[sub_resource type="GDScript" id="GDScript_x6j1p"]
+resource_name = "dfgjlhkdjfg"
+script/source = "extends Label
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	text = \"%.3f\" % %FailTimer.time_left
+"
+
+[node name="RuneMatch" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = SubResource("GDScript_uf2wm")
-match_radius = 60.459
 
-[node name="P1" type="Marker2D" parent="."]
-position = Vector2(141, 105)
+[node name="CenterContainer" type="CenterContainer" parent="."]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="P2" type="Marker2D" parent="."]
-position = Vector2(231, 208)
+[node name="FailTimer" type="Timer" parent="."]
+unique_name_in_owner = true
 
-[node name="P3" type="Marker2D" parent="."]
-position = Vector2(229, 345)
-
-[node name="P4" type="Marker2D" parent="."]
-position = Vector2(231, 208)
-
-[node name="P5" type="Marker2D" parent="."]
-position = Vector2(333, 107)
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 270.0
+offset_right = 198.0
+offset_bottom = 365.0
+script = SubResource("GDScript_x6j1p")
 
 [connection signal="failed" from="." to="." method="_on_failed"]
 [connection signal="succeed" from="." to="." method="_on_succeed"]
+[connection signal="timeout" from="FailTimer" to="." method="_on_fail_timer_timeout"]

@@ -1,23 +1,28 @@
-[gd_scene load_steps=2 format=3 uid="uid://7k76twct10lf"]
+[gd_scene load_steps=5 format=3 uid="uid://7k76twct10lf"]
 
 [sub_resource type="GDScript" id="GDScript_nej85"]
 resource_name = "main"
 script/source = "extends Control
 
 signal matched
+signal failed
 
 var _word_to_match : String = \"\"
 var _is_matching : bool = false
 var _match_index : int = 0
+var _available_time : float
 
-func _ready() -> void:
-	begin(\"Яздесь\")
+#func _ready() -> void:
+	#begin(\"Яздесь\")
 
 
-func begin(word:String) -> void:
+func begin(word:String, time:float) -> void:
 	%WordLabel.text = word.to_lower()
 	_word_to_match = word.to_lower()
 	%WordLabel/MatchLabel.text = \"\"
+	_available_time = time
+	%FailTimer.wait_time = time
+	%FailTimer.start()
 	_is_matching = true
 	_match_index = 0 
 
@@ -32,11 +37,43 @@ func _input(event: InputEvent) -> void:
 			%WordLabel/MatchLabel.text += event.as_text_key_label().to_lower()
 			if _match_index == len(_word_to_match):
 				_is_matching = false
+				%FailTimer.stop()
 				matched.emit()
+
+
+func _process(delta: float) -> void:
+	if not _is_matching:
+		return
+	
+	modulate.a = %FailTimer.time_left / _available_time
 
 
 func _on_matched() -> void:
 	print(\"Matched\")
+
+
+func _on_fail_timer_timeout() -> void:
+	_is_matching = false
+	failed.emit()
+"
+
+[sub_resource type="LabelSettings" id="LabelSettings_5nxxc"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_puq7s"]
+
+[sub_resource type="GDScript" id="GDScript_cbigr"]
+resource_name = "aghldhjifgkhglareh"
+script/source = "extends Label
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	text = \"%.3f\" % %FailTimer.time_left
 "
 
 [node name="WordMatch" type="Control"]
@@ -61,6 +98,7 @@ unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0.329412)
 layout_mode = 2
 text = "Привет"
+label_settings = SubResource("LabelSettings_5nxxc")
 
 [node name="MatchLabel" type="Label" parent="CenterContainer/WordLabel"]
 layout_mode = 1
@@ -69,5 +107,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+label_settings = SubResource("LabelSettings_puq7s")
+
+[node name="FailTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 499.0
+offset_top = 182.0
+offset_right = 634.0
+offset_bottom = 230.0
+script = SubResource("GDScript_cbigr")
 
 [connection signal="matched" from="." to="." method="_on_matched"]
+[connection signal="timeout" from="FailTimer" to="." method="_on_fail_timer_timeout"]

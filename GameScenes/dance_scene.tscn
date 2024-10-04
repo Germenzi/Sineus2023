@@ -18,8 +18,10 @@ func _ready() -> void:
 	begin_dance([\"W\", \"W\", \"S\", \"W\", \"D\"], 3.0)
 
 
-func begin_dance(actions:Array[String], action_time:float) -> void:
-	actions_chain = actions.duplicate()
+func begin_dance(actions:Array, action_time:float) -> void:
+	actions_chain = []
+	for i in actions:
+		actions_chain.append(i)
 	_expected_action_idx = 0
 	is_dansing = true
 	$ActionTimer.wait_time = action_time
@@ -39,20 +41,20 @@ func _input(event: InputEvent) -> void:
 	
 	if event is InputEventKey and event.is_pressed():
 		if event.is_action_pressed(actions_chain[_expected_action_idx]):
-			print(\"Match\")
+			#print(\"Match\")
+			correct_action_performed.emit()
 			_next_action()
 		else:
 			action_missed.emit()
-			print(\"Missed\")
+			#print(\"Missed\")
 
 
 
 func _next_action() -> void:
-	correct_action_performed.emit()
 	_expected_action_idx += 1
 	
 	if _expected_action_idx == len(actions_chain):
-		print(\"Dance finished\")
+		#print(\"Dance finished\")
 		is_dansing = false
 		dance_finished.emit()
 		%ActionTimer.stop()
@@ -62,7 +64,8 @@ func _next_action() -> void:
 
 
 func _on_action_timer_timeout() -> void:
-	print(\"Timeout\")
+	#print(\"Timeout\")
+	action_missed.emit()
 	_next_action()
 "
 

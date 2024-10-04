@@ -1,0 +1,65 @@
+[gd_scene load_steps=3 format=3 uid="uid://4poiathcvsns"]
+
+[ext_resource type="Texture2D" uid="uid://b5bwlyolkwol2" path="res://icon.svg" id="1_600g4"]
+
+[sub_resource type="GDScript" id="GDScript_etoxc"]
+resource_name = "main"
+script/source = "extends Control
+
+
+func get_main_texture() -> Texture2D:
+	return $MainTexture.texture
+
+
+
+func get_pieces_info() -> Array:
+	var res : Array = []
+	for i:TextureRect in $Pieces.get_children():
+		res.append([i.texture, i.position+i.size/2])
+	
+	return res
+"
+
+[node name="ImagePuzzleTask" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_etoxc")
+
+[node name="MainTexture" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_600g4")
+
+[node name="Pieces" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = -63.0
+offset_top = -57.0
+offset_right = 65.0
+offset_bottom = 71.0
+texture = ExtResource("1_600g4")
+
+[node name="TextureRect2" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = -10.0
+offset_top = 59.0
+offset_right = 119.0
+offset_bottom = 187.0
+texture = ExtResource("1_600g4")
+
+[node name="TextureRect3" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = -34.0
+offset_right = 198.0
+offset_bottom = 94.0
+texture = ExtResource("1_600g4")

@@ -1,10 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://drnx0su81cjuc"]
+[gd_scene load_steps=2 format=3 uid="uid://drnx0su81cjuc"]
 
 [sub_resource type="GDScript" id="GDScript_uf2wm"]
 resource_name = "main"
-script/source = "extends Control
+script/source = "extends CenterContainer
 
-signal failed
 signal succeed
 
 @export_range(1.0, 500.0)
@@ -23,12 +22,13 @@ var _is_dragging : bool = false
 	#begin_match(preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\").instantiate(), 100000)
 
 
-func begin_match(rune_match_puzzle:Control, time:float) -> void:
+func begin_match(rune_match_puzzle:Control) -> void:
 	if _rune_match_instance != null:
 		_rune_match_instance.queue_redraw()
-		$CenterContainer.remove_child(_rune_match_instance)
+		remove_child(_rune_match_instance)
 	
-	$CenterContainer.add_child(rune_match_puzzle)
+	add_child(rune_match_puzzle)
+	rune_match_puzzle.show_behind_parent = true
 	_rune_match_instance = rune_match_puzzle
 	
 	_key_points_markers = []
@@ -37,9 +37,6 @@ func begin_match(rune_match_puzzle:Control, time:float) -> void:
 	 
 	_matching_point_idx = 0
 	_is_matching = true
-	
-	%FailTimer.wait_time = time
-	%FailTimer.start()
 
 
 func _process(delta: float) -> void:
@@ -79,7 +76,6 @@ func _input(event: InputEvent) -> void:
 	
 	if event.is_action_pressed(\"mouse_left\"):
 		if _mouse_node != _key_points_markers[_matching_point_idx]:
-			fail()
 			return
 		
 		_matching_point_idx += 1
@@ -121,37 +117,10 @@ func _on_succeed() -> void:
 
 func success() -> void:
 	_is_matching = false
-	%FailTimer.stop()
 	succeed.emit()
-
-
-func fail() -> void:
-	_is_matching = false
-	%FailTimer.stop()
-	failed.emit()
-
-
-func _on_fail_timer_timeout() -> void:
-	fail()
 "
 
-[sub_resource type="GDScript" id="GDScript_x6j1p"]
-resource_name = "dfgjlhkdjfg"
-script/source = "extends Label
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	text = \"%.3f\" % %FailTimer.time_left
-"
-
-[node name="RuneMatch" type="Control"]
-layout_mode = 3
+[node name="RuneMatch" type="CenterContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -159,26 +128,4 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_uf2wm")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
-show_behind_parent = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="FailTimer" type="Timer" parent="."]
-unique_name_in_owner = true
-
-[node name="Label" type="Label" parent="."]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 270.0
-offset_right = 198.0
-offset_bottom = 365.0
-script = SubResource("GDScript_x6j1p")
-
-[connection signal="failed" from="." to="." method="_on_failed"]
 [connection signal="succeed" from="." to="." method="_on_succeed"]
-[connection signal="timeout" from="FailTimer" to="." method="_on_fail_timer_timeout"]

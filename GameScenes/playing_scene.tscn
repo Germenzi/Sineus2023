@@ -60,9 +60,9 @@ func _on_word_match_failed() -> void:
 
 
 
-func _on_rune_match_failed() -> void:
-	print(\"Rune failed\")
-	_game_over()
+
+
+
 
 
 func _on_rune_match_succeed() -> void:
@@ -134,7 +134,7 @@ func begin_word_pray() -> void:
 func begin_rune_pray() -> void:
 	$ShadingScreen.show()
 	%RuneMatch.show()
-	%RuneMatch.begin_match(preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\").instantiate(), 10.0)
+	%RuneMatch.begin_match(preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\").instantiate())
 
 
 func begin_image_puzzle_pray() -> void:
@@ -263,7 +263,6 @@ stretch_mode = 5
 [connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
 [connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]
 [connection signal="dance_finished" from="DanceScene" to="." method="_on_dance_scene_dance_finished"]
-[connection signal="failed" from="RuneMatch" to="." method="_on_rune_match_failed"]
 [connection signal="succeed" from="RuneMatch" to="." method="_on_rune_match_succeed"]
 [connection signal="completed" from="ImagePuzzle" to="." method="_on_image_puzzle_completed"]
 [connection signal="failed" from="ImagePuzzle" to="." method="_on_image_puzzle_failed"]

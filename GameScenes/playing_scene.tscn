@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=12 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cr7vpgr65aew4" path="res://UIScenes/game_over_screen_ui.tscn" id="5_ilx7b"]
 [ext_resource type="PackedScene" uid="uid://7k76twct10lf" path="res://GameScenes/GameplayScenes/word_match.tscn" id="5_sen30"]
 [ext_resource type="PackedScene" uid="uid://bck1tuauc0uv4" path="res://UIScenes/game_completed_ui.tscn" id="6_orr7l"]
+[ext_resource type="Texture2D" uid="uid://rfphsbuojk1p" path="res://assets/images/bg.png" id="8_4g5qf"]
 
 [sub_resource type="GDScript" id="GDScript_7a7so"]
 resource_name = "main"
@@ -245,6 +246,19 @@ visible = false
 [node name="GuiTransition" type="Node" parent="GUI/GameCompletedUI"]
 script = ExtResource("1_rwten")
 layout = NodePath("..")
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -2
+
+[node name="TextureRect" type="TextureRect" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_4g5qf")
+expand_mode = 1
+stretch_mode = 5
 
 [connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
 [connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]

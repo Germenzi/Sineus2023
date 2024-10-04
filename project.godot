@@ -19,6 +19,11 @@ config/icon="res://icon.svg"
 
 GuiTransitions="*res://addons/simple-gui-transitions/singleton.gd"
 
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/simple-gui-transitions/plugin.cfg")

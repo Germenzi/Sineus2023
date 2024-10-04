@@ -254,6 +254,7 @@ visible = false
 
 [node name="GuiTransition" type="Node" parent="GUI/GameOverScreenUI"]
 script = ExtResource("1_rwten")
+duration = 0.2
 layout = NodePath("..")
 
 [node name="GameCompletedUI" parent="GUI" instance=ExtResource("6_orr7l")]
@@ -262,6 +263,7 @@ visible = false
 
 [node name="GuiTransition" type="Node" parent="GUI/GameCompletedUI"]
 script = ExtResource("1_rwten")
+duration = 0.2
 layout = NodePath("..")
 
 [node name="Background" type="CanvasLayer" parent="."]
@@ -274,8 +276,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("8_4g5qf")
-expand_mode = 1
-stretch_mode = 5
+expand_mode = 5
+stretch_mode = 6
 
 [connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
 [connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]

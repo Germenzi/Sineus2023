@@ -50,6 +50,12 @@ size_flags_vertical = 0
 theme_override_font_sizes/font_size = 30
 text = "  Назад  "
 
+[node name="NameLabel1" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Команда ТриплЭй"
+label_settings = ExtResource("1_4rllp")
+horizontal_alignment = 1
+
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
@@ -60,53 +66,52 @@ columns = 2
 
 [node name="NameLabel1" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Name1"
+text = "Ксения Васюхнова "
 label_settings = ExtResource("1_4rllp")
 
 [node name="RoleLabel1" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Role1"
+text = "Геймдизайн, 2D арт"
 label_settings = ExtResource("1_4rllp")
 
 [node name="NameLabel2" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Name2"
+text = "Лана Константинова"
 label_settings = ExtResource("1_4rllp")
 
 [node name="RoleLabel2" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Role2"
+text = " Нарративный дизайн, 2D арт"
 label_settings = ExtResource("1_4rllp")
-horizontal_alignment = 2
 
 [node name="NameLabel3" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Name3"
+text = "Егор Кройтор"
 label_settings = ExtResource("1_4rllp")
 
 [node name="RoleLabel3" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Role3"
+text = "Нарративный дизайн, программирование"
 label_settings = ExtResource("1_4rllp")
 
 [node name="NameLabel4" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Name4"
+text = "Никита Иващук "
 label_settings = ExtResource("1_4rllp")
 
 [node name="RoleLabel4" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Role4"
+text = "Программирование"
 label_settings = ExtResource("1_4rllp")
 
 [node name="NameLabel5" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Name5"
+text = "Владимир Королев"
 label_settings = ExtResource("1_4rllp")
 
 [node name="RoleLabel5" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Role5"
+text = "Нарративный дизайн, саунд дизайн, озвучка"
 label_settings = ExtResource("1_4rllp")
 
 [node name="ButtonHoverSound" type="AudioStreamPlayer" parent="."]

@@ -65,12 +65,10 @@ theme_override_constants/separation = 0
 
 [node name="TeamTitle" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "ТрпилЭй
-представляет"
 
 [node name="GameTitile" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Название игры"
+text = "Танец Даждьбогу"
 label_settings = SubResource("LabelSettings_1qmat")
 
 [node name="Gap" type="Control" parent="CenterContainer/VBoxContainer"]

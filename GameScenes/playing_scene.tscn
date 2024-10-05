@@ -159,7 +159,7 @@ func _game_over() -> void:
 func begin_word_pray() -> void:
 	$ShadingScreen.show()
 	%WordMatch.show()
-	%WordMatch.begin(\"прив\", 5.0)
+	%WordMatch.begin(\"Привет\", 5.0)
 
 
 func begin_rune_pray() -> void:

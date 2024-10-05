@@ -34,9 +34,9 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	if event is InputEventKey and event.is_released():
-		if event.as_text_key_label().to_lower() == _word_to_match[_match_index]:
+		if _word_to_match[_match_index].to_lower() in KeycodeTranslatorNamespace.KEYCODE_MAP.get(event.keycode, \"\").to_lower():
+			%WordLabel/MatchLabel.text += _word_to_match[_match_index].to_lower()
 			_match_index += 1
-			%WordLabel/MatchLabel.text += event.as_text_key_label().to_lower()
 			if _match_index == len(_word_to_match):
 				_is_matching = false
 				%FailTimer.stop()

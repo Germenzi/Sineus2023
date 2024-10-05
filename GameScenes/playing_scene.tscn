@@ -20,7 +20,7 @@ script/source = "extends Node
 
 var _dance_score : int = 0
 
-var _current_dance : int = 0
+var _current_dance : int = 1
 var _damage : int = 0
 
 func _ready() -> void:
@@ -162,10 +162,12 @@ func begin_word_pray() -> void:
 func begin_rune_pray() -> void:
 	$ShadingScreen.show()
 	%RuneStack.show()
-	var t = preload(\"res://GameScenes/TasksContent/rune_image_puzzle.tscn\")
+	var t1 = preload(\"res://GameScenes/TasksContent/rune_1_task.tscn\").instantiate()
+	var t2 = preload(\"res://GameScenes/TasksContent/rune_2_task.tscn\").instantiate()
+	var t3 = preload(\"res://GameScenes/TasksContent/rune_3_task.tscn\").instantiate()
 	%RuneStack.begin_runes(
-		[t.instantiate(), t.instantiate()],
-		10.0
+		[t1, t2, t3],
+		1000.0
 	)
 
 

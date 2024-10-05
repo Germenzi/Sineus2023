@@ -23,9 +23,11 @@ func begin_runes(runes:Array, time:float) -> void:
 		var rune_match : Control = load(ScenesNamespace.RUNE_MATCH_SCENE_FILEPATH).instantiate()
 		%Runes.add_child(rune_match)
 		rune_match.begin_match(i)
-		var rune_label : Label = Label.new()
+		
+		var rune_label : Label = load(ScenesNamespace.RUNE_LABEL_SCENE_FILEPATH).instantiate()
 		rune_label.text = i.rune_word
 		rune_label.self_modulate.a = 0.4
+		
 		rune_match.succeed.connect(_on_rune_completed.bind(rune_match, rune_label))
 		%Words.add_child(rune_label)
 		_completed_runes = 0
@@ -113,11 +115,11 @@ size_flags_vertical = 4
 theme_override_constants/separation = 50
 alignment = 1
 
-[node name="Words" type="VBoxContainer" parent="CenterContainer/VBoxContainer"]
+[node name="Words" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_constants/separation = 2
+theme_override_constants/separation = 20
 
 [node name="FailTimer" type="Timer" parent="."]
 unique_name_in_owner = true

@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=67 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://d4gbb2w67s14p" path="res://assets/images/ground.png" id="10_ef20g"]
 [ext_resource type="Texture2D" uid="uid://cwr5j3ffktpig" path="res://assets/images/animations/Anim_Pose_1.png" id="13_uejyk"]
 [ext_resource type="Texture2D" uid="uid://dvry8y5ky5euc" path="res://assets/images/animations/loser_pose.png" id="13_w4w51"]
-[ext_resource type="Texture2D" uid="uid://djyherdqi7nwp" path="res://assets/images/char_shadow.png" id="14_hy7hd"]
+[ext_resource type="Texture2D" uid="uid://c52okg2s7evp" path="res://assets/images/char_shadow.png" id="14_hy7hd"]
 [ext_resource type="Texture2D" uid="uid://cia2ow3dxhmr" path="res://assets/images/animations/Anim_Pose_2.png" id="14_oggnp"]
 [ext_resource type="Texture2D" uid="uid://bt6pq56er5sy1" path="res://assets/images/animations/prayer_pose.png" id="15_aifer"]
 [ext_resource type="AudioStream" uid="uid://chry4l0w6o0cc" path="res://assets/sounds/pray.wav" id="15_ynnfx"]
@@ -22,6 +22,11 @@
 [ext_resource type="Texture2D" uid="uid://c0jqdos402x5r" path="res://assets/images/animations/victory_pose.png" id="16_mxuoa"]
 [ext_resource type="AudioStream" uid="uid://b3534p6rdxgl0" path="res://assets/sounds/win.mp3" id="17_3d7nn"]
 [ext_resource type="AudioStream" uid="uid://dbjnfdm86mynu" path="res://assets/sounds/lose.wav" id="18_17s31"]
+[ext_resource type="PackedScene" uid="uid://bf45tt23uqyj5" path="res://UIScenes/dance_tutorial_ui.tscn" id="23_mapw7"]
+[ext_resource type="PackedScene" uid="uid://c71fpfoth6yfw" path="res://UIScenes/word_match_tutorial_ui.tscn" id="24_ulb2b"]
+[ext_resource type="PackedScene" uid="uid://mqq1kwhfek2o" path="res://UIScenes/rune_match_tutorial_ui.tscn" id="25_uohk8"]
+[ext_resource type="PackedScene" uid="uid://bmrirhyibo1sg" path="res://UIScenes/image_puzzle_tutorial_ui.tscn" id="26_m8mns"]
+[ext_resource type="PackedScene" uid="uid://bime51voshwi3" path="res://UIScenes/you_are_good_ui.tscn" id="27_xvujw"]
 
 [sub_resource type="GDScript" id="GDScript_7a7so"]
 resource_name = "main"
@@ -29,7 +34,7 @@ script/source = "extends Node
 
 var _dance_score : int = 0
 
-var _current_dance : int = 1
+var _current_dance : int = 0
 var _damage : int = 0
 
 
@@ -37,6 +42,10 @@ var _current_action : int = 0
 
 
 func _ready() -> void:
+	if GlobalSettings.show_tutorial:
+		%DanceTutorialUI.show()
+		await %Tutorials.tutorial_passed
+	
 	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\", \"W\", \"S\"], 2.5)
 
 
@@ -50,9 +59,7 @@ func _on_dance_scene_action_missed() -> void:
 	
 	_damage += 1
 	%Egg.set_damage(_damage)
-	
-	print(\"Dance miss\")
-	
+
 	_current_action += 1
 	_go_dance_animation()
 
@@ -66,16 +73,11 @@ func _on_dance_scene_correct_action_performed() -> void:
 	circle.global_position = %ExpectedDanceAction.global_position + %ExpectedDanceAction.size / 2
 	circle.show_behind_parent = true
 	
-	print(\"Dance match\")
-	
 	_current_action += 1
 	_go_dance_animation()
 
 
 func _on_dance_scene_dance_finished() -> void:
-	print(\"Dance finished\")
-	print(\"Dance score: %d\" % _dance_score)
-	GuiTransitions.show(\"ShadingScreen\")
 	%ShamanAnimatedSprite.play(\"praying\")
 	%Egg.set_egg_state(_current_dance+1)
 	
@@ -90,8 +92,6 @@ func _on_dance_scene_dance_finished() -> void:
 
 
 func _on_word_match_matched() -> void:
-	$ShadingScreen.hide()
-	%WordMatch.hide()
 	_next_dance()
 
 
@@ -109,20 +109,15 @@ func _on_rune_stack_failed() -> void:
 
 
 func _on_rune_stack_succeed() -> void:
-	$ShadingScreen.hide()
-	%RuneStack.hide()
+	await get_tree().create_timer(1.0).timeout
 	_next_dance()
 
 
 
 
 
-
-
-
 func _on_image_puzzle_completed() -> void:
-	$ShadingScreen.hide()
-	%ImagePuzzle.hide()
+	await get_tree().create_timer(1.0).timeout
 	
 	if _dance_score / 24.0 > 0.8:
 		_game_completed()
@@ -146,11 +141,16 @@ func _on_image_puzzle_failed() -> void:
 
 
 
-
-
 func _next_dance() -> void:
+	_hide_tasks()
+	
 	_current_dance += 1
 	_current_action = 0
+	
+	
+	await _dance_state()
+	await _await_youre_good_screen()
+	
 	%ShamanAnimatedSprite.play(\"pose1\")
 	
 	if _current_dance == 1:
@@ -159,19 +159,15 @@ func _next_dance() -> void:
 	elif _current_dance == 2:
 		%ShamanAnimatedSprite.speed_scale = 2.0
 		%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\", \"W\", \"S\"], 1.5)
-	
-	_dance_state()
 
 
 func _game_completed() -> void:
-	%RuneStack.hide()
-	%ImagePuzzle.hide()
-	%WordMatch.hide()
+	_hide_tasks()
 	
 	%ShamanAnimatedSprite.play(\"victory\")
 	
-	%GameOverScreenUI.show()
-	GuiTransitions.go_to(\"GameCompletedUI\")
+	%GameCompletedUI.show()
+	GuiTransitions.show(\"GameCompletedUI\")
 	
 	%PrayMusic.stop()
 	%DanceMusic.stop()
@@ -179,16 +175,14 @@ func _game_completed() -> void:
 
 
 func _game_over() -> void:
-	%RuneStack.hide()
-	%ImagePuzzle.hide()
-	%WordMatch.hide()
+	_hide_tasks()
 	
 	%Egg.destroy()
 	
 	%ShamanAnimatedSprite.play(\"lose\")
 	
-	%GameCompletedUI.show()
-	GuiTransitions.go_to(\"GameOverScreenUI\")
+	%GameOverScreenUI.show()
+	GuiTransitions.show(\"GameOverScreenUI\")
 	
 	%PrayMusic.stop()
 	%DanceMusic.stop()
@@ -198,13 +192,21 @@ func _game_over() -> void:
 
 
 func begin_word_pray() -> void:
-	_pray_state()
+	if GlobalSettings.show_tutorial:
+		%WordMatchTutorialUI.show()
+		await %Tutorials.tutorial_passed
+	
+	await _pray_state()
 	%WordMatch.show()
-	%WordMatch.begin(\"Привет\", 5.0)
+	%WordMatch.begin(\"Привет как дела\", 5.0)
 
 
 func begin_rune_pray() -> void:
-	_pray_state()
+	if GlobalSettings.show_tutorial:
+		%RuneMatchTutorialUI.show()
+		await %Tutorials.tutorial_passed
+	
+	await _pray_state()
 	%RuneStack.show()
 	var t1 = preload(\"res://GameScenes/TasksContent/rune_1_task.tscn\").instantiate()
 	var t2 = preload(\"res://GameScenes/TasksContent/rune_2_task.tscn\").instantiate()
@@ -216,7 +218,11 @@ func begin_rune_pray() -> void:
 
 
 func begin_image_puzzle_pray() -> void:
-	_pray_state()
+	if GlobalSettings.show_tutorial:
+		%ImagePuzzleTutorialUI.show()
+		await %Tutorials.tutorial_passed
+	
+	await _pray_state()
 	%ImagePuzzle.show()
 	%ImagePuzzle.begin(preload(\"res://GameScenes/TasksContent/image_puzzle_task.tscn\").instantiate(), 10000.0)
 
@@ -227,12 +233,20 @@ func begin_image_puzzle_pray() -> void:
 func _pray_state() -> void:
 	%DanceMusic.stream_paused = true
 	%PrayMusic.play()
+	
 	$ShadingScreen.show()
+	GuiTransitions.show(\"ShadingScreen\")
+	await GuiTransitions.show_completed
+	print(\"AJHISK\")
 
 
 func _dance_state() -> void:
+	GuiTransitions.hide(\"ShadingScreen\")
+	await GuiTransitions.hide_completed
+	print(\"ABOBA\")
 	%DanceMusic.stream_paused = false
 	%PrayMusic.stop()
+	
 	$ShadingScreen.hide()
 
 
@@ -242,6 +256,23 @@ func _go_dance_animation() -> void:
 			%ShamanAnimatedSprite.play(\"pose1\")
 		1:
 			%ShamanAnimatedSprite.play(\"pose2\")
+
+
+
+func _hide_tasks() -> void:
+	%RuneStack.hide()
+	%ImagePuzzle.hide()
+	%WordMatch.hide()
+
+
+func _await_youre_good_screen() -> void:
+	%YouAreGoodUI.show()
+	GuiTransitions.show(\"YouAreGoodUI\")
+	await GuiTransitions.show_completed
+	await get_tree().create_timer(1.0).timeout
+	GuiTransitions.hide(\"YouAreGoodUI\")
+	await GuiTransitions.hide_completed
+	%YouAreGoodUI.hide()
 "
 
 [sub_resource type="LabelSettings" id="LabelSettings_s0nrc"]
@@ -547,6 +578,33 @@ resource_name = "sounds"
 script/source = "extends Node
 "
 
+[sub_resource type="GDScript" id="GDScript_jofa1"]
+resource_name = "tutorials"
+script/source = "extends CanvasLayer
+
+signal tutorial_passed
+
+
+func _on_dance_tutorial_ui_dance_button_pressed() -> void:
+	%DanceTutorialUI.hide()
+	tutorial_passed.emit()
+
+
+func _on_word_match_tutorial_ui_word_match_button_pressed() -> void:
+	%WordMatchTutorialUI.hide()
+	tutorial_passed.emit()
+
+
+func _on_rune_match_tutorial_ui_rune_match_begin_button_pressed() -> void:
+	%RuneMatchTutorialUI.hide()
+	tutorial_passed.emit()
+
+
+func _on_image_puzzle_tutorial_ui_begin_puzzle_button_pressed() -> void:
+	%ImagePuzzleTutorialUI.hide()
+	tutorial_passed.emit()
+"
+
 [node name="PlayingScene" type="Node"]
 script = SubResource("GDScript_7a7so")
 
@@ -558,6 +616,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.666667)
+
+[node name="GuiTransition" type="Node" parent="ShadingScreen"]
+script = ExtResource("1_rwten")
+layout = NodePath("..")
 
 [node name="DanceScene" parent="." instance=ExtResource("1_bdmix")]
 unique_name_in_owner = true
@@ -628,6 +690,14 @@ texture = ExtResource("8_4g5qf")
 expand_mode = 5
 stretch_mode = 6
 
+[node name="Rain" type="ColorRect" parent="Background"]
+material = SubResource("ShaderMaterial_p3m84")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="Ground" type="TextureRect" parent="Background"]
 anchors_preset = 12
 anchor_top = 1.0
@@ -642,14 +712,6 @@ stretch_mode = 6
 
 [node name="Egg" parent="Background" instance=ExtResource("10_5miwq")]
 unique_name_in_owner = true
-
-[node name="Rain" type="ColorRect" parent="Background"]
-material = SubResource("ShaderMaterial_p3m84")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="Shaman" type="Control" parent="Background"]
 layout_mode = 3
@@ -708,6 +770,36 @@ unique_name_in_owner = true
 stream = ExtResource("18_17s31")
 volume_db = -7.98
 
+[node name="Tutorials" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+layer = 3
+script = SubResource("GDScript_jofa1")
+
+[node name="DanceTutorialUI" parent="Tutorials" instance=ExtResource("23_mapw7")]
+unique_name_in_owner = true
+visible = false
+
+[node name="WordMatchTutorialUI" parent="Tutorials" instance=ExtResource("24_ulb2b")]
+unique_name_in_owner = true
+visible = false
+
+[node name="RuneMatchTutorialUI" parent="Tutorials" instance=ExtResource("25_uohk8")]
+unique_name_in_owner = true
+visible = false
+
+[node name="ImagePuzzleTutorialUI" parent="Tutorials" instance=ExtResource("26_m8mns")]
+unique_name_in_owner = true
+visible = false
+
+[node name="YouAreGoodUI" parent="Tutorials" instance=ExtResource("27_xvujw")]
+unique_name_in_owner = true
+visible = false
+
+[node name="GuiTransition" type="Node" parent="Tutorials/YouAreGoodUI"]
+script = ExtResource("1_rwten")
+auto_start = 0
+layout = NodePath("..")
+
 [connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
 [connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]
 [connection signal="dance_finished" from="DanceScene" to="." method="_on_dance_scene_dance_finished"]
@@ -724,3 +816,7 @@ volume_db = -7.98
 [connection signal="quit_button_pressed" from="GUI/GameOverScreenUI" to="GUI" method="_on_game_over_screen_ui_quit_button_pressed"]
 [connection signal="main_menu_button_pressed" from="GUI/GameCompletedUI" to="GUI" method="_on_game_completed_ui_main_menu_button_pressed"]
 [connection signal="quit_button_pressed" from="GUI/GameCompletedUI" to="GUI" method="_on_game_completed_ui_quit_button_pressed"]
+[connection signal="dance_button_pressed" from="Tutorials/DanceTutorialUI" to="Tutorials" method="_on_dance_tutorial_ui_dance_button_pressed"]
+[connection signal="word_match_button_pressed" from="Tutorials/WordMatchTutorialUI" to="Tutorials" method="_on_word_match_tutorial_ui_word_match_button_pressed"]
+[connection signal="rune_match_begin_button_pressed" from="Tutorials/RuneMatchTutorialUI" to="Tutorials" method="_on_rune_match_tutorial_ui_rune_match_begin_button_pressed"]
+[connection signal="begin_puzzle_button_pressed" from="Tutorials/ImagePuzzleTutorialUI" to="Tutorials" method="_on_image_puzzle_tutorial_ui_begin_puzzle_button_pressed"]

@@ -1,27 +1,27 @@
-[gd_scene load_steps=3 format=3 uid="uid://bf45tt23uqyj5"]
+[gd_scene load_steps=3 format=3 uid="uid://mqq1kwhfek2o"]
 
-[ext_resource type="Theme" uid="uid://cu3abw5gbq42e" path="res://UIScenes/UIAssets/tutorial_menu_theme.tres" id="1_dufym"]
+[ext_resource type="Theme" uid="uid://cu3abw5gbq42e" path="res://UIScenes/UIAssets/tutorial_menu_theme.tres" id="1_anigl"]
 
-[sub_resource type="GDScript" id="GDScript_08e5d"]
+[sub_resource type="GDScript" id="GDScript_grb1s"]
 resource_name = "main"
 script/source = "extends Control
 
-signal dance_button_pressed
+signal rune_match_begin_button_pressed
 
 
 func _on_dance_button_pressed() -> void:
-	dance_button_pressed.emit()
+	rune_match_begin_button_pressed.emit()
 "
 
-[node name="DanceTutorialUI" type="Control"]
+[node name="RuneMatchTutorialUI" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_dufym")
-script = SubResource("GDScript_08e5d")
+theme = ExtResource("1_anigl")
+script = SubResource("GDScript_grb1s")
 
 [node name="ShadingScreen" type="ColorRect" parent="."]
 layout_mode = 1
@@ -45,13 +45,13 @@ layout_mode = 2
 
 [node name="TutorialLabel" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Помоги мне. Танцуй для нашего бога.
-Используй клавиши WASD"
+text = "Хорошо. Теперь восславь Даждьбога.
+Нарисуй руны мышью."
 horizontal_alignment = 1
 
 [node name="DanceButton" type="Button" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "  Танцевать  "
+text = "  Рисовать  "
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/DanceButton" to="." method="_on_dance_button_pressed"]

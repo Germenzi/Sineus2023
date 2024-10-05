@@ -16,6 +16,8 @@ const KEYCODE_MAP : Dictionary = {
 	# Символы точки и запятой
 	KEY_PERIOD: ".Ю", KEY_COMMA: ",Б",
 	
+	KEY_SPACE : " ",
+	
 	# Специальные символы
 	KEY_SEMICOLON: ";Ж", KEY_APOSTROPHE: "'Э", KEY_BRACKETLEFT: "[Х",
 	KEY_BRACKETRIGHT: "]Ъ"

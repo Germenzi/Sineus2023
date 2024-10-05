@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://cu3abw5gbq42e"]
+
+[ext_resource type="FontFile" uid="uid://btfo1ljh03jmy" path="res://assets/fonts/Highliner regular.otf" id="1_x68hl"]
+
+[resource]
+default_font = ExtResource("1_x68hl")
+default_font_size = 70

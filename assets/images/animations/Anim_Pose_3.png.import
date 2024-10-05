@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c52okg2s7evp"
-path="res://.godot/imported/char_shadow.png-e1112e58ded6ec806c836f423209030c.ctex"
+uid="uid://0n8rqus1j2mu"
+path="res://.godot/imported/Anim_Pose_3.png-57f78d7d7d5c7ab3b5ce8616e272f943.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/char_shadow.png"
-dest_files=["res://.godot/imported/char_shadow.png-e1112e58ded6ec806c836f423209030c.ctex"]
+source_file="res://assets/images/animations/Anim_Pose_3.png"
+dest_files=["res://.godot/imported/Anim_Pose_3.png-57f78d7d7d5c7ab3b5ce8616e272f943.ctex"]
 
 [params]
 

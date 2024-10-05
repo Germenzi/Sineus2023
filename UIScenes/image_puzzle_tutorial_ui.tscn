@@ -1,27 +1,27 @@
-[gd_scene load_steps=3 format=3 uid="uid://bf45tt23uqyj5"]
+[gd_scene load_steps=3 format=3 uid="uid://bmrirhyibo1sg"]
 
-[ext_resource type="Theme" uid="uid://cu3abw5gbq42e" path="res://UIScenes/UIAssets/tutorial_menu_theme.tres" id="1_dufym"]
+[ext_resource type="Theme" uid="uid://cu3abw5gbq42e" path="res://UIScenes/UIAssets/tutorial_menu_theme.tres" id="1_jgg08"]
 
-[sub_resource type="GDScript" id="GDScript_08e5d"]
+[sub_resource type="GDScript" id="GDScript_4y3rc"]
 resource_name = "main"
 script/source = "extends Control
 
-signal dance_button_pressed
+signal begin_puzzle_button_pressed
 
 
 func _on_dance_button_pressed() -> void:
-	dance_button_pressed.emit()
+	begin_puzzle_button_pressed.emit()
 "
 
-[node name="DanceTutorialUI" type="Control"]
+[node name="ImagePuzzleTutorialUI" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_dufym")
-script = SubResource("GDScript_08e5d")
+theme = ExtResource("1_jgg08")
+script = SubResource("GDScript_4y3rc")
 
 [node name="ShadingScreen" type="ColorRect" parent="."]
 layout_mode = 1
@@ -45,13 +45,14 @@ layout_mode = 2
 
 [node name="TutorialLabel" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Помоги мне. Танцуй для нашего бога.
-Используй клавиши WASD"
+text = "Славься, Даждьбог, славься.
+Эта картина - наш тебе дар.
+Собери ее с помощью мыши."
 horizontal_alignment = 1
 
 [node name="DanceButton" type="Button" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "  Танцевать  "
+text = "  Собрать  "
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/DanceButton" to="." method="_on_dance_button_pressed"]

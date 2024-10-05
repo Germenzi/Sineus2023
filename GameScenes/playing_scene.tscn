@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=20 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
@@ -9,7 +9,10 @@
 [ext_resource type="PackedScene" uid="uid://7k76twct10lf" path="res://GameScenes/GameplayScenes/word_match.tscn" id="5_sen30"]
 [ext_resource type="PackedScene" uid="uid://bck1tuauc0uv4" path="res://UIScenes/game_completed_ui.tscn" id="6_orr7l"]
 [ext_resource type="Texture2D" uid="uid://rfphsbuojk1p" path="res://assets/images/bg.png" id="8_4g5qf"]
-[ext_resource type="Texture2D" uid="uid://c7kr6610a66eo" path="res://assets/images/character.png" id="10_3b5be"]
+[ext_resource type="Shader" path="res://Shaders/rain.gdshader" id="10_3bo7c"]
+[ext_resource type="Texture2D" uid="uid://d4gbb2w67s14p" path="res://assets/images/ground.png" id="10_ef20g"]
+[ext_resource type="Texture2D" uid="uid://cec8r0gin8vyd" path="res://assets/images/anim.png" id="12_7oevl"]
+[ext_resource type="Script" path="res://Scripts/FramesTexture.gd" id="13_71iqw"]
 
 [sub_resource type="GDScript" id="GDScript_7a7so"]
 resource_name = "main"
@@ -31,16 +34,23 @@ func _on_dance_scene_action_missed() -> void:
 	%ExpectedDanceAction.add_child(circle)
 	circle.global_position = %ExpectedDanceAction.global_position + %ExpectedDanceAction.size / 2
 	circle.show_behind_parent = true
+	
+	(%Shaman.texture as TextureFrame).crossing_frame += 1
+	
 	print(\"Dance miss\")
 
 
 func _on_dance_scene_correct_action_performed() -> void:
 	_dance_score += 1
+	
 	var circle : Node2D = load(ScenesNamespace.EXTENDING_CIRCLE_SCENE_FILEPATH).instantiate()
 	circle.circle_color = Color.WHITE
 	%ExpectedDanceAction.add_child(circle)
 	circle.global_position = %ExpectedDanceAction.global_position + %ExpectedDanceAction.size / 2
 	circle.show_behind_parent = true
+	
+	(%Shaman.texture as TextureFrame).crossing_frame += 1
+	
 	print(\"Dance match\")
 
 
@@ -203,6 +213,25 @@ func _on_game_completed_ui_quit_button_pressed() -> void:
 	get_tree().quit()
 "
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p3m84"]
+shader = ExtResource("10_3bo7c")
+shader_parameter/count = 300
+shader_parameter/slant = -0.1
+shader_parameter/speed = 79.228
+shader_parameter/blur = 0.0015
+shader_parameter/colour = Color(1, 1, 1, 1)
+shader_parameter/size = Vector2(0.005, 0.5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r2num"]
+atlas = ExtResource("12_7oevl")
+region = Rect2(0, 0, 1200, 1500)
+script = ExtResource("13_71iqw")
+tiles_width = 8
+tiles_height = 1
+current_frame_x = 0
+current_frame_y = 0
+crossing_frame = 0
+
 [node name="PlayingScene" type="Node"]
 script = SubResource("GDScript_7a7so")
 
@@ -284,13 +313,39 @@ texture = ExtResource("8_4g5qf")
 expand_mode = 5
 stretch_mode = 6
 
-[node name="TextureRect" type="TextureRect" parent="Background/BackgroundImage"]
-layout_mode = 0
-offset_left = 504.0
-offset_top = 353.0
-offset_right = 770.0
-offset_bottom = 697.0
-texture = ExtResource("10_3b5be")
+[node name="ColorRect" type="ColorRect" parent="Background"]
+material = SubResource("ShaderMaterial_p3m84")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Ground" type="TextureRect" parent="Background"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -170.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("10_ef20g")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Shaman" type="TextureRect" parent="Background"]
+unique_name_in_owner = true
+anchors_preset = -1
+anchor_left = 0.498
+anchor_top = 1.0
+anchor_right = 0.498
+anchor_bottom = 1.0
+offset_left = -133.44
+offset_top = -367.0
+offset_right = 132.56
+offset_bottom = -23.0
+grow_vertical = 2
+texture = SubResource("AtlasTexture_r2num")
 expand_mode = 1
 stretch_mode = 5
 

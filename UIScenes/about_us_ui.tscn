@@ -86,7 +86,7 @@ label_settings = ExtResource("1_4rllp")
 
 [node name="RoleLabel2" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
-text = " Нарративный дизайн, 2D арт"
+text = "Нарративный дизайн, 2D арт"
 label_settings = ExtResource("1_4rllp")
 
 [node name="NameLabel3" type="Label" parent="MarginContainer/VBoxContainer/GridContainer"]

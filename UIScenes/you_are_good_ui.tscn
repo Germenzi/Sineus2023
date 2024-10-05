@@ -31,4 +31,6 @@ grow_vertical = 2
 [node name="Label" type="Label" parent="CenterContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 150
-text = "Даждьбог доволен"
+text = "Даждьбог доволен
+Продолжай"
+horizontal_alignment = 1

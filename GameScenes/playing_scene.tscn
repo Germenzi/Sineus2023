@@ -60,7 +60,7 @@ func _ready() -> void:
 	var action_chain : Array[String] = []
 	for i in 10:
 		action_chain.append(ACTIONS.pick_random())
-	%DanceScene.begin_dance(action_chain, 2.5)
+	%DanceScene.begin_dance(action_chain, 1.5)
 
 
 
@@ -175,13 +175,13 @@ func _next_dance() -> void:
 		var action_chain : Array[String] = []
 		for i in 20:
 			action_chain.append(ACTIONS.pick_random())
-		%DanceScene.begin_dance(action_chain, 2)
+		%DanceScene.begin_dance(action_chain, 1.0)
 		%ShamanAnimatedSprite.speed_scale = 1.5
 	elif _current_dance == 2:
 		var action_chain : Array[String] = []
 		for i in 30:
 			action_chain.append(ACTIONS.pick_random())
-		%DanceScene.begin_dance(action_chain, 1.5)
+		%DanceScene.begin_dance(action_chain, 0.7)
 		%ShamanAnimatedSprite.speed_scale = 2.0
 
 
@@ -275,13 +275,11 @@ func _pray_state() -> void:
 	$ShadingScreen.show()
 	GuiTransitions.show(\"ShadingScreen\")
 	await GuiTransitions.show_completed
-	print(\"AJHISK\")
 
 
 func _dance_state() -> void:
 	GuiTransitions.hide(\"ShadingScreen\")
 	await GuiTransitions.hide_completed
-	print(\"ABOBA\")
 	%DanceMusic.stream_paused = false
 	%PrayMusic.stop()
 	

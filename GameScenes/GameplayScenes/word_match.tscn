@@ -33,7 +33,7 @@ func _input(event: InputEvent) -> void:
 	if not _is_matching:
 		return
 	
-	if event is InputEventKey and event.is_released():
+	if event is InputEventKey and event.is_pressed():
 		if _word_to_match[_match_index].to_lower() in KeycodeTranslatorNamespace.KEYCODE_MAP.get(event.keycode, \"\").to_lower():
 			%WordLabel/MatchLabel.text += _word_to_match[_match_index].to_lower()
 			_match_index += 1

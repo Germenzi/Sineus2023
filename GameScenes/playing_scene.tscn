@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=19 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
@@ -12,8 +12,7 @@
 [ext_resource type="Shader" path="res://Shaders/rain.gdshader" id="10_3bo7c"]
 [ext_resource type="PackedScene" uid="uid://3a4gd2x3vnrd" path="res://UIScenes/egg.tscn" id="10_5miwq"]
 [ext_resource type="Texture2D" uid="uid://d4gbb2w67s14p" path="res://assets/images/ground.png" id="10_ef20g"]
-[ext_resource type="Texture2D" uid="uid://cec8r0gin8vyd" path="res://assets/images/anim.png" id="12_7oevl"]
-[ext_resource type="Script" path="res://Scripts/FramesTexture.gd" id="13_71iqw"]
+[ext_resource type="Texture2D" uid="uid://b6851ggv5l8c1" path="res://assets/images/dancing_texture_frames.tres" id="13_kc03g"]
 
 [sub_resource type="GDScript" id="GDScript_7a7so"]
 resource_name = "main"
@@ -61,6 +60,7 @@ func _on_dance_scene_dance_finished() -> void:
 	print(\"Dance finished\")
 	print(\"Dance score: %d\" % _dance_score)
 	GuiTransitions.show(\"ShadingScreen\")
+	%Shaman.texture = TexturesNamespace.SHAMAN_PRAY_POSE_TEXTURE
 	if _current_dance == 0:
 		begin_word_pray()
 	elif _current_dance == 1:
@@ -129,6 +129,7 @@ func _on_image_puzzle_failed() -> void:
 
 func _next_dance() -> void:
 	_current_dance += 1
+	%Shaman.texture = TexturesNamespace.SHAMAN_DANCING_TEXTURE_FRAME
 	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\", \"W\", \"S\"], 1.0)
 
 
@@ -226,16 +227,6 @@ shader_parameter/speed = 79.228
 shader_parameter/blur = 0.0015
 shader_parameter/colour = Color(1, 1, 1, 1)
 shader_parameter/size = Vector2(0.005, 0.5)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r2num"]
-atlas = ExtResource("12_7oevl")
-region = Rect2(0, 0, 1200, 1500)
-script = ExtResource("13_71iqw")
-tiles_width = 8
-tiles_height = 1
-current_frame_x = 0
-current_frame_y = 0
-crossing_frame = 0
 
 [node name="PlayingScene" type="Node"]
 script = SubResource("GDScript_7a7so")
@@ -353,7 +344,7 @@ offset_top = -367.0
 offset_right = 132.56
 offset_bottom = -23.0
 grow_vertical = 2
-texture = SubResource("AtlasTexture_r2num")
+texture = ExtResource("13_kc03g")
 expand_mode = 1
 stretch_mode = 5
 

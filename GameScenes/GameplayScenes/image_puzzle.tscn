@@ -20,8 +20,8 @@ var hit_radius : float = 20.0
 var _dragging : Control 
 var _in_puzzle : bool = false
 
-func _ready() -> void:
-	begin(preload(\"res://GameScenes/TasksContent/image_puzzle_task.tscn\").instantiate(), 10000)
+#func _ready() -> void:
+	#begin(preload(\"res://GameScenes/TasksContent/image_puzzle_task.tscn\").instantiate(), 10000)
 
 
 func begin(scene:Control, time_to_solve:float) -> void:
@@ -42,7 +42,7 @@ func begin(scene:Control, time_to_solve:float) -> void:
 		inst.dragged.connect(_on_piece_dragged.bind(inst))
 		inst.dropped.connect(_on_piece_dropped.bind(inst))
 		
-		inst.position = Vector2((%PieciesToDrag.size.x+inst.size.x)*randf(), (%PieciesToDrag.size.y+inst.size.y)*randf()) - inst.size
+		inst.position = Vector2((%PieciesToDrag.size.x)*randf(), (%PieciesToDrag.size.y)*randf()) - inst.size / 2
 		
 		inst.position_at_image = i[1]
 	

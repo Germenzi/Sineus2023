@@ -1,0 +1,726 @@
+[gd_scene load_steps=61 format=3 uid="uid://cira0qedb2jbr"]
+
+[ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
+[ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
+[ext_resource type="PackedScene" uid="uid://b7yll0m41uka3" path="res://GameScenes/GameplayScenes/rune_stack.tscn" id="3_6ijm1"]
+[ext_resource type="PackedScene" uid="uid://bu65gtqjpyrsn" path="res://GameScenes/GameplayScenes/image_puzzle.tscn" id="3_bjft5"]
+[ext_resource type="PackedScene" uid="uid://cr7vpgr65aew4" path="res://UIScenes/game_over_screen_ui.tscn" id="5_ilx7b"]
+[ext_resource type="FontFile" uid="uid://bxhrdi4vewkis" path="res://assets/fonts/Kluchik Regular.otf" id="5_oq7gv"]
+[ext_resource type="PackedScene" uid="uid://7k76twct10lf" path="res://GameScenes/GameplayScenes/word_match.tscn" id="5_sen30"]
+[ext_resource type="PackedScene" uid="uid://bck1tuauc0uv4" path="res://UIScenes/game_completed_ui.tscn" id="6_orr7l"]
+[ext_resource type="Texture2D" uid="uid://rfphsbuojk1p" path="res://assets/images/bg.png" id="8_4g5qf"]
+[ext_resource type="Shader" path="res://Shaders/rain.gdshader" id="10_3bo7c"]
+[ext_resource type="PackedScene" uid="uid://3a4gd2x3vnrd" path="res://UIScenes/egg.tscn" id="10_5miwq"]
+[ext_resource type="Texture2D" uid="uid://d4gbb2w67s14p" path="res://assets/images/ground.png" id="10_ef20g"]
+[ext_resource type="Texture2D" uid="uid://cwr5j3ffktpig" path="res://assets/images/animations/Anim_Pose_1.png" id="13_uejyk"]
+[ext_resource type="Texture2D" uid="uid://dvry8y5ky5euc" path="res://assets/images/animations/loser_pose.png" id="13_w4w51"]
+[ext_resource type="Texture2D" uid="uid://djyherdqi7nwp" path="res://assets/images/char_shadow.png" id="14_hy7hd"]
+[ext_resource type="Texture2D" uid="uid://cia2ow3dxhmr" path="res://assets/images/animations/Anim_Pose_2.png" id="14_oggnp"]
+[ext_resource type="Texture2D" uid="uid://bt6pq56er5sy1" path="res://assets/images/animations/prayer_pose.png" id="15_aifer"]
+[ext_resource type="AudioStream" uid="uid://chry4l0w6o0cc" path="res://assets/sounds/pray.wav" id="15_ynnfx"]
+[ext_resource type="AudioStream" uid="uid://c8xj3lx82igwr" path="res://assets/sounds/dance.mp3" id="16_2ocqt"]
+[ext_resource type="Texture2D" uid="uid://c0jqdos402x5r" path="res://assets/images/animations/victory_pose.png" id="16_mxuoa"]
+[ext_resource type="AudioStream" uid="uid://b3534p6rdxgl0" path="res://assets/sounds/win.mp3" id="17_3d7nn"]
+[ext_resource type="AudioStream" uid="uid://dbjnfdm86mynu" path="res://assets/sounds/lose.wav" id="18_17s31"]
+
+[sub_resource type="GDScript" id="GDScript_7a7so"]
+resource_name = "main"
+script/source = "extends Node
+
+var _dance_score : int = 0
+
+var _current_dance : int = 0
+var _damage : int = 0
+
+
+var _current_action : int = 0
+
+
+func _ready() -> void:
+	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\", \"W\", \"S\"], 2.0)
+
+
+
+func _on_dance_scene_action_missed() -> void:
+	var circle : Node2D = load(ScenesNamespace.EXTENDING_CIRCLE_SCENE_FILEPATH).instantiate()
+	circle.circle_color = Color.INDIAN_RED
+	%ExpectedDanceAction.add_child(circle)
+	circle.global_position = %ExpectedDanceAction.global_position + %ExpectedDanceAction.size / 2
+	circle.show_behind_parent = true
+	
+	_damage += 1
+	%Egg.set_damage(_damage)
+	
+	print(\"Dance miss\")
+	
+	_current_action += 1
+	_go_dance_animation()
+
+
+func _on_dance_scene_correct_action_performed() -> void:
+	_dance_score += 1
+	
+	var circle : Node2D = load(ScenesNamespace.EXTENDING_CIRCLE_SCENE_FILEPATH).instantiate()
+	circle.circle_color = Color.WHITE
+	%ExpectedDanceAction.add_child(circle)
+	circle.global_position = %ExpectedDanceAction.global_position + %ExpectedDanceAction.size / 2
+	circle.show_behind_parent = true
+	
+	print(\"Dance match\")
+	
+	_current_action += 1
+	_go_dance_animation()
+
+
+func _on_dance_scene_dance_finished() -> void:
+	print(\"Dance finished\")
+	print(\"Dance score: %d\" % _dance_score)
+	GuiTransitions.show(\"ShadingScreen\")
+	%ShamanAnimatedSprite.play(\"praying\")
+	%Egg.set_egg_state(_current_dance+1)
+	
+	if _current_dance == 0:
+		begin_word_pray()
+	elif _current_dance == 1:
+		begin_rune_pray()
+	else:
+		begin_image_puzzle_pray()
+
+
+
+
+func _on_word_match_matched() -> void:
+	$ShadingScreen.hide()
+	%WordMatch.hide()
+	_next_dance()
+
+
+
+func _on_word_match_failed() -> void:
+	_game_over()
+
+
+
+
+
+
+func _on_rune_stack_failed() -> void:
+	_game_over()
+
+
+func _on_rune_stack_succeed() -> void:
+	$ShadingScreen.hide()
+	%RuneStack.hide()
+	_next_dance()
+
+
+
+
+
+
+
+
+func _on_image_puzzle_completed() -> void:
+	$ShadingScreen.hide()
+	%ImagePuzzle.hide()
+	
+	if _dance_score / 24.0 > 0.8:
+		_game_completed()
+		print(\"YOU WIN HAHAHAAH\")
+	else:
+		_game_over()
+		print(\"BAD DANCE\")
+
+
+func _on_image_puzzle_piece_correctly_dropped() -> void:
+	print(\"Hahah norm popal\")
+
+
+func _on_image_puzzle_piece_drop_missed() -> void:
+	print(\"Hahah ne popal\")
+
+
+func _on_image_puzzle_failed() -> void:
+	_game_over()
+
+
+
+
+
+
+func _next_dance() -> void:
+	_current_dance += 1
+	_current_action = 0
+	%ShamanAnimatedSprite.play(\"pose1\")
+	
+	if _current_dance == 1:
+		%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\", \"W\", \"S\"], 1.5)
+		%ShamanAnimatedSprite.speed_scale = 1.5
+	elif _current_dance == 2:
+		%ShamanAnimatedSprite.speed_scale = 2.0
+		%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\", \"W\", \"S\"], 1.0)
+	
+	_dance_state()
+
+
+func _game_completed() -> void:
+	%RuneStack.hide()
+	%ImagePuzzle.hide()
+	%WordMatch.hide()
+	
+	%ShamanAnimatedSprite.play(\"victory\")
+	
+	%GameOverScreenUI.show()
+	GuiTransitions.go_to(\"GameCompletedUI\")
+	
+	%PrayMusic.stop()
+	%DanceMusic.stop()
+	%WinMusic.play()
+
+
+func _game_over() -> void:
+	%RuneStack.hide()
+	%ImagePuzzle.hide()
+	%WordMatch.hide()
+	
+	%Egg.destroy()
+	
+	%ShamanAnimatedSprite.play(\"lose\")
+	
+	%GameCompletedUI.show()
+	GuiTransitions.go_to(\"GameOverScreenUI\")
+	
+	%PrayMusic.stop()
+	%DanceMusic.stop()
+	%LooseMusic.play()
+
+
+
+
+func begin_word_pray() -> void:
+	_pray_state()
+	%WordMatch.show()
+	%WordMatch.begin(\"Привет\", 5.0)
+
+
+func begin_rune_pray() -> void:
+	_pray_state()
+	%RuneStack.show()
+	var t1 = preload(\"res://GameScenes/TasksContent/rune_1_task.tscn\").instantiate()
+	var t2 = preload(\"res://GameScenes/TasksContent/rune_2_task.tscn\").instantiate()
+	var t3 = preload(\"res://GameScenes/TasksContent/rune_3_task.tscn\").instantiate()
+	%RuneStack.begin_runes(
+		[t1, t2, t3],
+		1000.0
+	)
+
+
+func begin_image_puzzle_pray() -> void:
+	_pray_state()
+	%ImagePuzzle.show()
+	%ImagePuzzle.begin(preload(\"res://GameScenes/TasksContent/image_puzzle_task.tscn\").instantiate(), 10000.0)
+
+
+
+
+
+func _pray_state() -> void:
+	%DanceMusic.stream_paused = true
+	%PrayMusic.play()
+	$ShadingScreen.show()
+
+
+func _dance_state() -> void:
+	%DanceMusic.stream_paused = false
+	%PrayMusic.stop()
+	$ShadingScreen.hide()
+
+
+func _go_dance_animation() -> void:
+	match _current_action % 2:
+		0:
+			%ShamanAnimatedSprite.play(\"pose1\")
+		1:
+			%ShamanAnimatedSprite.play(\"pose2\")
+"
+
+[sub_resource type="LabelSettings" id="LabelSettings_s0nrc"]
+font = ExtResource("5_oq7gv")
+font_size = 100
+
+[sub_resource type="GDScript" id="GDScript_l5cll"]
+resource_name = "expected_action_label"
+script/source = "extends Label
+
+
+func _process(delta: float) -> void:
+	text = \"%s\" % %DanceScene.get_expected_action()
+"
+
+[sub_resource type="GDScript" id="GDScript_1li5q"]
+resource_name = "gui_controller"
+script/source = "extends CanvasLayer
+
+
+func _on_game_over_screen_ui_again_button_pressed() -> void:
+	get_tree().reload_current_scene()
+
+
+func _on_game_over_screen_ui_main_menu_button_pressed() -> void:
+	get_tree().change_scene_to_file(ScenesNamespace.MAIN_MENU_SCENE_FILEPATH)
+
+
+func _on_game_over_screen_ui_quit_button_pressed() -> void:
+	get_tree().quit()
+
+
+
+
+
+
+
+
+func _on_game_completed_ui_main_menu_button_pressed() -> void:
+	get_tree().change_scene_to_file(ScenesNamespace.MAIN_MENU_SCENE_FILEPATH)
+
+
+func _on_game_completed_ui_quit_button_pressed() -> void:
+	get_tree().quit()
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p3m84"]
+shader = ExtResource("10_3bo7c")
+shader_parameter/count = 300
+shader_parameter/slant = -0.1
+shader_parameter/speed = 79.228
+shader_parameter/blur = 0.0015
+shader_parameter/colour = Color(1, 1, 1, 1)
+shader_parameter/size = Vector2(0.005, 0.5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5uow3"]
+atlas = ExtResource("13_w4w51")
+region = Rect2(0, 0, 1360, 1403)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c6oij"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(0, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7qs6e"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(1300, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eerbc"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(2600, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wsgso"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(3900, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cpbco"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(5200, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oq407"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(6500, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1htko"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(7800, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ed3qg"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(9100, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l4ob4"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(10400, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tqr8n"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(9100, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_24wxi"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(7800, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0wj13"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(6500, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7s1yc"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(5200, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_43ka8"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(3900, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_64r4o"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(2600, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w7rku"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(1300, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_voa5i"]
+atlas = ExtResource("13_uejyk")
+region = Rect2(0, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cso5t"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(0, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r5e6u"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(1300, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nyapk"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(2600, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5uoh0"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(3900, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ru1du"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(5200, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ekbjf"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(6500, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8c3oh"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(5200, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_swc0l"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(3900, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6dpi1"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(2600, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qtvh3"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(1300, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8l8dp"]
+atlas = ExtResource("14_oggnp")
+region = Rect2(0, 0, 1300, 1600)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6spxj"]
+atlas = ExtResource("15_aifer")
+region = Rect2(0, 0, 1383, 1656)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6y8mr"]
+atlas = ExtResource("16_mxuoa")
+region = Rect2(0, 0, 1379, 1484)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2btw0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5uow3")
+}],
+"loop": true,
+"name": &"lose",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c6oij")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7qs6e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eerbc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wsgso")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cpbco")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oq407")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1htko")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ed3qg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l4ob4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tqr8n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_24wxi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0wj13")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7s1yc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_43ka8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_64r4o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w7rku")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_voa5i")
+}],
+"loop": true,
+"name": &"pose1",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cso5t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r5e6u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nyapk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5uoh0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ru1du")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ekbjf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8c3oh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_swc0l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6dpi1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qtvh3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8l8dp")
+}],
+"loop": true,
+"name": &"pose2",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6spxj")
+}],
+"loop": true,
+"name": &"praying",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6y8mr")
+}],
+"loop": true,
+"name": &"victory",
+"speed": 5.0
+}]
+
+[sub_resource type="GDScript" id="GDScript_ui5fv"]
+resource_name = "sounds"
+script/source = "extends Node
+"
+
+[node name="PlayingScene" type="Node"]
+script = SubResource("GDScript_7a7so")
+
+[node name="ShadingScreen" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.666667)
+
+[node name="DanceScene" parent="." instance=ExtResource("1_bdmix")]
+unique_name_in_owner = true
+
+[node name="ImagePuzzle" parent="." instance=ExtResource("3_bjft5")]
+unique_name_in_owner = true
+visible = false
+
+[node name="RuneStack" parent="." instance=ExtResource("3_6ijm1")]
+unique_name_in_owner = true
+visible = false
+
+[node name="WordMatch" parent="." instance=ExtResource("5_sen30")]
+unique_name_in_owner = true
+visible = false
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="ExpectedDanceAction" type="Label" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+label_settings = SubResource("LabelSettings_s0nrc")
+script = SubResource("GDScript_l5cll")
+
+[node name="GUI" type="CanvasLayer" parent="."]
+script = SubResource("GDScript_1li5q")
+
+[node name="GameOverScreenUI" parent="GUI" instance=ExtResource("5_ilx7b")]
+unique_name_in_owner = true
+visible = false
+
+[node name="GuiTransition" type="Node" parent="GUI/GameOverScreenUI"]
+script = ExtResource("1_rwten")
+duration = 0.2
+layout = NodePath("..")
+
+[node name="GameCompletedUI" parent="GUI" instance=ExtResource("6_orr7l")]
+unique_name_in_owner = true
+visible = false
+
+[node name="GuiTransition" type="Node" parent="GUI/GameCompletedUI"]
+script = ExtResource("1_rwten")
+duration = 0.2
+layout = NodePath("..")
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -2
+
+[node name="BackgroundImage" type="TextureRect" parent="Background"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("8_4g5qf")
+expand_mode = 5
+stretch_mode = 6
+
+[node name="Ground" type="TextureRect" parent="Background"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -170.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("10_ef20g")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Egg" parent="Background" instance=ExtResource("10_5miwq")]
+unique_name_in_owner = true
+
+[node name="Rain" type="ColorRect" parent="Background"]
+material = SubResource("ShaderMaterial_p3m84")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Shaman" type="Control" parent="Background"]
+layout_mode = 3
+anchor_left = 0.25
+anchor_top = 0.935
+anchor_right = 0.25
+anchor_bottom = 0.935
+offset_left = -137.0
+offset_top = -344.2
+offset_right = 129.0
+offset_bottom = -0.200073
+grow_vertical = 0
+
+[node name="ShamanAnimatedSprite" type="AnimatedSprite2D" parent="Background/Shaman"]
+unique_name_in_owner = true
+position = Vector2(136, 187)
+scale = Vector2(0.2, 0.2)
+sprite_frames = SubResource("SpriteFrames_2btw0")
+animation = &"lose"
+autoplay = "pose1"
+
+[node name="TextureRect" type="TextureRect" parent="Background/Shaman"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -41.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("14_hy7hd")
+
+[node name="Sounds" type="Node" parent="."]
+script = SubResource("GDScript_ui5fv")
+
+[node name="PrayMusic" type="AudioStreamPlayer" parent="Sounds"]
+unique_name_in_owner = true
+stream = ExtResource("15_ynnfx")
+volume_db = -17.53
+
+[node name="DanceMusic" type="AudioStreamPlayer" parent="Sounds"]
+unique_name_in_owner = true
+stream = ExtResource("16_2ocqt")
+volume_db = -10.01
+autoplay = true
+
+[node name="WinMusic" type="AudioStreamPlayer" parent="Sounds"]
+unique_name_in_owner = true
+stream = ExtResource("17_3d7nn")
+volume_db = -34.28
+
+[node name="LooseMusic" type="AudioStreamPlayer" parent="Sounds"]
+unique_name_in_owner = true
+stream = ExtResource("18_17s31")
+volume_db = -7.98
+
+[connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
+[connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]
+[connection signal="dance_finished" from="DanceScene" to="." method="_on_dance_scene_dance_finished"]
+[connection signal="completed" from="ImagePuzzle" to="." method="_on_image_puzzle_completed"]
+[connection signal="failed" from="ImagePuzzle" to="." method="_on_image_puzzle_failed"]
+[connection signal="piece_correctly_dropped" from="ImagePuzzle" to="." method="_on_image_puzzle_piece_correctly_dropped"]
+[connection signal="piece_drop_missed" from="ImagePuzzle" to="." method="_on_image_puzzle_piece_drop_missed"]
+[connection signal="failed" from="RuneStack" to="." method="_on_rune_stack_failed"]
+[connection signal="succeed" from="RuneStack" to="." method="_on_rune_stack_succeed"]
+[connection signal="failed" from="WordMatch" to="." method="_on_word_match_failed"]
+[connection signal="matched" from="WordMatch" to="." method="_on_word_match_matched"]
+[connection signal="again_button_pressed" from="GUI/GameOverScreenUI" to="GUI" method="_on_game_over_screen_ui_again_button_pressed"]
+[connection signal="main_menu_button_pressed" from="GUI/GameOverScreenUI" to="GUI" method="_on_game_over_screen_ui_main_menu_button_pressed"]
+[connection signal="quit_button_pressed" from="GUI/GameOverScreenUI" to="GUI" method="_on_game_over_screen_ui_quit_button_pressed"]
+[connection signal="main_menu_button_pressed" from="GUI/GameCompletedUI" to="GUI" method="_on_game_completed_ui_main_menu_button_pressed"]
+[connection signal="quit_button_pressed" from="GUI/GameCompletedUI" to="GUI" method="_on_game_completed_ui_quit_button_pressed"]

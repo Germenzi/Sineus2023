@@ -17,7 +17,7 @@
 [ext_resource type="AudioStream" uid="uid://chry4l0w6o0cc" path="res://assets/sounds/pray.wav" id="15_ynnfx"]
 [ext_resource type="AudioStream" uid="uid://c8xj3lx82igwr" path="res://assets/sounds/dance.mp3" id="16_2ocqt"]
 [ext_resource type="AudioStream" uid="uid://b3534p6rdxgl0" path="res://assets/sounds/win.mp3" id="17_3d7nn"]
-[ext_resource type="AudioStream" uid="uid://4htllh4ts1ay" path="res://assets/sounds/loose.ogg" id="18_jf26m"]
+[ext_resource type="AudioStream" uid="uid://dbjnfdm86mynu" path="res://assets/sounds/lose.wav" id="18_17s31"]
 
 [sub_resource type="GDScript" id="GDScript_7a7so"]
 resource_name = "main"
@@ -420,7 +420,7 @@ volume_db = -34.28
 
 [node name="LooseMusic" type="AudioStreamPlayer" parent="Sounds"]
 unique_name_in_owner = true
-stream = ExtResource("18_jf26m")
+stream = ExtResource("18_17s31")
 volume_db = -7.98
 
 [connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]

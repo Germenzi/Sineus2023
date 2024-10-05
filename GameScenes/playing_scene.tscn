@@ -66,6 +66,7 @@ func _on_dance_scene_dance_finished() -> void:
 	print(\"Dance score: %d\" % _dance_score)
 	GuiTransitions.show(\"ShadingScreen\")
 	%Shaman.texture = TexturesNamespace.SHAMAN_PRAY_POSE_TEXTURE
+	%Egg.set_egg_state(_current_dance+1)
 	if _current_dance == 0:
 		begin_word_pray()
 	elif _current_dance == 1:

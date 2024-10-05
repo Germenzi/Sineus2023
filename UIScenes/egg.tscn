@@ -1,6 +1,6 @@
 [gd_scene load_steps=27 format=3 uid="uid://3a4gd2x3vnrd"]
 
-[ext_resource type="Texture2D" uid="uid://dt1lyteto1fuu" path="res://assets/images/egg_3.png" id="1_hxc12"]
+[ext_resource type="Texture2D" uid="uid://cxwtdhcndw6mj" path="res://assets/images/egg_base.png" id="1_4eowv"]
 [ext_resource type="Texture2D" uid="uid://dcid07oam6jeg" path="res://assets/images/cracks/1.png" id="2_1h58q"]
 [ext_resource type="Texture2D" uid="uid://c3opmc3rk18rp" path="res://assets/images/cracks/14.png" id="2_6udu5"]
 [ext_resource type="Texture2D" uid="uid://cfwrxvvvl5q36" path="res://assets/images/cracks/2.png" id="3_dpr5w"]
@@ -37,6 +37,17 @@ func set_damage(dmg:int) -> void:
 		$Egg.get_child(dmg-1).show()
 
 
+func set_egg_state(state:int) -> void:
+	if state == 1:
+		$Egg.texture = TexturesNamespace.EGG_STATE1_TEXTURE
+	
+	if state == 2:
+		$Egg.texture = TexturesNamespace.EGG_STATE2_TEXTURE
+	
+	if state == 3:
+		$Egg.texture = TexturesNamespace.EGG_STATE3_TEXTURE
+
+
 func destroy() -> void:
 	$Egg.hide()
 	$DestroyedEgg.show()
@@ -70,7 +81,7 @@ offset_bottom = 467.0
 grow_horizontal = 2
 grow_vertical = 0
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("1_hxc12")
+texture = ExtResource("1_4eowv")
 stretch_mode = 5
 
 [node name="Crack1" type="TextureRect" parent="Egg"]

@@ -89,9 +89,6 @@ func _input(event: InputEvent) -> void:
 func _draw() -> void:
 	#if not _is_matching:
 		#return
-	
-	if _matching_point_idx < len(_key_points_markers):
-		draw_circle(_key_points_markers[_matching_point_idx].global_position-global_position, 5.0, Color.WHITE)
 	#
 	#for i in _key_points_markers:
 		#draw_circle(i.global_position-global_position, 5.0, Color.RED)
@@ -108,6 +105,9 @@ func _draw() -> void:
 		_key_points_markers[i].global_position-global_position, 
 		Color.WHITE, 
 		10.0, true)
+	
+	if _matching_point_idx < len(_key_points_markers):
+		draw_circle(_key_points_markers[_matching_point_idx].global_position-global_position, 5.0, Color.BURLYWOOD)
 
 
 func _on_failed() -> void:

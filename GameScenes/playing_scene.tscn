@@ -20,7 +20,7 @@ script/source = "extends Node
 
 var _dance_score : int = 0
 
-var _current_dance : int = 1
+var _current_dance : int = 0
 var _damage : int = 0
 
 func _ready() -> void:
@@ -138,6 +138,8 @@ func _game_completed() -> void:
 	%ImagePuzzle.hide()
 	%WordMatch.hide()
 	
+	%Shaman.texture = TexturesNamespace.SHAMAN_WIN_POSE_TEXTURE
+	
 	%GameOverScreenUI.show()
 	GuiTransitions.go_to(\"GameCompletedUI\")
 
@@ -148,6 +150,7 @@ func _game_over() -> void:
 	%WordMatch.hide()
 	
 	%Egg.destroy()
+	%Shaman.texture = TexturesNamespace.SHAMAN_LOSE_POSE_TEXTURE
 	
 	%GameCompletedUI.show()
 	GuiTransitions.go_to(\"GameOverScreenUI\")

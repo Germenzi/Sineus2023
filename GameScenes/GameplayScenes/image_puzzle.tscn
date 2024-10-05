@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://bu65gtqjpyrsn"]
+[gd_scene load_steps=8 format=3 uid="uid://bu65gtqjpyrsn"]
 
 [ext_resource type="Texture2D" uid="uid://b5bwlyolkwol2" path="res://icon.svg" id="1_yy65s"]
 [ext_resource type="Shader" path="res://Shaders/only_outline.gdshader" id="2_7xqeo"]
+[ext_resource type="PackedScene" uid="uid://6snt5dtxtu6a" path="res://UIScenes/tiling_progress_bar.tscn" id="3_jpekx"]
 
 [sub_resource type="GDScript" id="GDScript_w2a63"]
 resource_name = "main"
@@ -21,7 +22,7 @@ var _dragging : Control
 var _in_puzzle : bool = false
 
 #func _ready() -> void:
-	#begin(preload(\"res://GameScenes/TasksContent/image_puzzle_task.tscn\").instantiate(), 10000)
+	#begin(preload(\"res://GameScenes/TasksContent/image_puzzle_task.tscn\").instantiate(), 10)
 
 
 func begin(scene:Control, time_to_solve:float) -> void:
@@ -123,15 +124,15 @@ func _process(delta: float) -> void:
 	text = \"%.3f\" % %FailTimer.time_left
 "
 
-[sub_resource type="GDScript" id="GDScript_4pkpr"]
-resource_name = "timebar"
-script/source = "extends ProgressBar
+[sub_resource type="GDScript" id="GDScript_6xmjc"]
+resource_name = "time_bar"
+script/source = "extends Control
 
 var alltime : float = 1.0
 
 
 func _process(delta: float) -> void:
-	value = %FailTimer.time_left / alltime
+	$TilingProgressBar.set_progress(%FailTimer.time_left / alltime)
 "
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_l5a02"]
@@ -185,14 +186,14 @@ theme_override_constants/margin_bottom = 20
 layout_mode = 2
 theme_override_constants/separation = 50
 
-[node name="TimeBar" type="ProgressBar" parent="MarginContainer3/VBoxContainer"]
+[node name="TimeBar" type="Control" parent="MarginContainer3/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 30)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-max_value = 1.0
-step = 0.0
-show_percentage = false
-script = SubResource("GDScript_4pkpr")
+script = SubResource("GDScript_6xmjc")
+
+[node name="TilingProgressBar" parent="MarginContainer3/VBoxContainer/TimeBar" instance=ExtResource("3_jpekx")]
+layout_mode = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer3/VBoxContainer"]
 layout_mode = 2

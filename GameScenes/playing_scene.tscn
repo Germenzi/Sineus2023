@@ -25,7 +25,7 @@ script/source = "extends Node
 
 var _dance_score : int = 0
 
-var _current_dance : int = 2
+var _current_dance : int = 0
 var _damage : int = 0
 
 func _ready() -> void:

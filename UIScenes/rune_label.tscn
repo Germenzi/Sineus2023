@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://c8v34l7rqa24y"]
 
-[ext_resource type="FontFile" uid="uid://bxhrdi4vewkis" path="res://assets/fonts/Kluchik Regular.otf" id="1_vue0o"]
+[ext_resource type="FontFile" uid="uid://dqv1o64n70pjw" path="res://assets/fonts/PorspicanSerif-Regular.otf" id="1_y2dmp"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_f1mga"]
-font = ExtResource("1_vue0o")
+font = ExtResource("1_y2dmp")
 font_size = 80
 
 [node name="RuneLabel" type="Label"]

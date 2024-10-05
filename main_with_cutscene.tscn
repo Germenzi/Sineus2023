@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://3k8uu88bnrmw"]
+[gd_scene load_steps=10 format=3 uid="uid://3k8uu88bnrmw"]
 
 [ext_resource type="PackedScene" uid="uid://dyx3t4ur7smqh" path="res://UIScenes/main_menu_ui.tscn" id="1_dr412"]
 [ext_resource type="PackedScene" uid="uid://ysya4p0qsljl" path="res://UIScenes/about_us_ui.tscn" id="2_bdxla"]
@@ -6,6 +6,7 @@
 [ext_resource type="Shader" path="res://Shaders/rain.gdshader" id="4_red4c"]
 [ext_resource type="AudioStream" uid="uid://biksp8c1yk7wj" path="res://assets/sounds/background.wav" id="5_piwce"]
 [ext_resource type="AudioStream" uid="uid://br8g1iuu14hgq" path="res://assets/sounds/nachalo.wav" id="6_ltwqy"]
+[ext_resource type="Theme" uid="uid://cu3abw5gbq42e" path="res://UIScenes/UIAssets/tutorial_menu_theme.tres" id="7_33u5n"]
 
 [sub_resource type="GDScript" id="GDScript_v4jg8"]
 resource_name = "main"
@@ -37,7 +38,12 @@ func _on_main_menu_ui_quit_button_pressed() -> void:
 
 
 func _on_main_menu_ui_sound_button_switched(enabled: bool) -> void:
-	pass
+	AudioServer.set_bus_mute(0, not enabled)
+
+
+
+func _on_main_menu_ui_tutorial_button_switched(enabled: bool) -> void:
+	GlobalSettings.show_tutorial = enabled
 
 
 
@@ -52,7 +58,8 @@ func _on_cutscene_speach_finished() -> void:
 	%MenuMusic.play()
 	$MainMenuUI.show()
 	$MarginContainer.hide()
-	GuiTransitions.go_to(\"MainMenuUI\")
+	GuiTransitions.show(\"MainMenuUI\")
+	await GuiTransitions.show_completed
 
 
 func _on_skip_speach_button_pressed() -> void:
@@ -60,7 +67,8 @@ func _on_skip_speach_button_pressed() -> void:
 	$MainMenuUI.show()
 	%MenuMusic.play()
 	$MarginContainer.hide()
-	GuiTransitions.go_to(\"MainMenuUI\")
+	GuiTransitions.show(\"MainMenuUI\")
+	await GuiTransitions.show_completed
 "
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w1obt"]
@@ -120,6 +128,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = ExtResource("7_33u5n")
 theme_override_constants/margin_left = 50
 theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 50
@@ -130,11 +139,13 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
 text = "  Пропустить  "
+flat = true
 
 [connection signal="about_us_button_pressed" from="MainMenuUI" to="." method="_on_main_menu_ui_about_us_button_pressed"]
 [connection signal="play_button_pressed" from="MainMenuUI" to="." method="_on_main_menu_ui_play_button_pressed"]
 [connection signal="quit_button_pressed" from="MainMenuUI" to="." method="_on_main_menu_ui_quit_button_pressed"]
 [connection signal="sound_button_switched" from="MainMenuUI" to="." method="_on_main_menu_ui_sound_button_switched"]
+[connection signal="tutorial_button_switched" from="MainMenuUI" to="." method="_on_main_menu_ui_tutorial_button_switched"]
 [connection signal="back_button_pressed" from="AboutUsUI" to="." method="_on_about_us_ui_back_button_pressed"]
 [connection signal="finished" from="Sounds/CutsceneSpeach" to="." method="_on_cutscene_speach_finished"]
 [connection signal="pressed" from="MarginContainer/SkipSpeachButton" to="." method="_on_skip_speach_button_pressed"]

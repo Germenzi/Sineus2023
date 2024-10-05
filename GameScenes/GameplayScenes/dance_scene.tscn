@@ -87,6 +87,7 @@ unique_name_in_owner = true
 one_shot = true
 
 [node name="Label" type="Label" parent="."]
+visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 script = SubResource("GDScript_c8vfx")

@@ -54,5 +54,6 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 4
 text = "  Собрать  "
+flat = true
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/DanceButton" to="." method="_on_dance_button_pressed"]

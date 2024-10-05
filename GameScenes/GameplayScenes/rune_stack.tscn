@@ -33,11 +33,11 @@ func begin_runes(runes:Array, time:float) -> void:
 		rune_match.succeed.connect(_on_rune_completed.bind(rune_match, rune_label))
 		%Words.add_child(rune_label)
 		_completed_runes = 0
-		%TimeBar.alltime = time
 	
 	%FailTimer.wait_time = time
 	%FailTimer.start()
-
+	
+	%TimeBar.alltime = time
 
 func _on_fail_timer_timeout() -> void:
 	fail()
@@ -85,7 +85,7 @@ var alltime : float = 1.0
 
 
 func _process(delta: float) -> void:
-	$TilingProgressBar.set_process(%FailTimer.time_left / alltime)
+	$TilingProgressBar.set_progress(%FailTimer.time_left / alltime)
 "
 
 [node name="RuneStack" type="Control"]

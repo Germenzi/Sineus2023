@@ -1,10 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://cbfoeblv077iw"]
+[gd_scene load_steps=8 format=3 uid="uid://dcvpm2u8oysr2"]
 
-[ext_resource type="PackedScene" uid="uid://dyx3t4ur7smqh" path="res://UIScenes/main_menu_ui.tscn" id="1_7qll1"]
-[ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="2_xf2ei"]
-[ext_resource type="PackedScene" uid="uid://ysya4p0qsljl" path="res://UIScenes/about_us_ui.tscn" id="3_t72tc"]
-[ext_resource type="Shader" path="res://Shaders/rain.gdshader" id="4_ahqff"]
-[ext_resource type="AudioStream" uid="uid://biksp8c1yk7wj" path="res://assets/sounds/background.wav" id="5_p3pt1"]
+[ext_resource type="PackedScene" uid="uid://dyx3t4ur7smqh" path="res://UIScenes/main_menu_ui.tscn" id="1_xxkyi"]
+[ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="2_v8eaf"]
+[ext_resource type="PackedScene" uid="uid://ysya4p0qsljl" path="res://UIScenes/about_us_ui.tscn" id="3_1hrsa"]
+[ext_resource type="Shader" path="res://Shaders/rain.gdshader" id="4_cctdo"]
+[ext_resource type="AudioStream" uid="uid://biksp8c1yk7wj" path="res://assets/sounds/background.wav" id="5_cfij3"]
 
 [sub_resource type="GDScript" id="GDScript_v4jg8"]
 resource_name = "main"
@@ -36,8 +36,12 @@ func _on_main_menu_ui_quit_button_pressed() -> void:
 
 
 func _on_main_menu_ui_sound_button_switched(enabled: bool) -> void:
-	pass
+	AudioServer.set_bus_mute(0, not enabled)
 
+
+
+func _on_main_menu_ui_tutorial_button_switched(enabled: bool) -> void:
+	GlobalSettings.show_tutorial = enabled
 
 
 
@@ -49,7 +53,7 @@ func _on_about_us_ui_back_button_pressed() -> void:
 "
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w1obt"]
-shader = ExtResource("4_ahqff")
+shader = ExtResource("4_cctdo")
 shader_parameter/count = 150
 shader_parameter/slant = -0.1
 shader_parameter/speed = 48.897
@@ -60,17 +64,17 @@ shader_parameter/size = Vector2(0.005, 0.5)
 [node name="Main" type="Node"]
 script = SubResource("GDScript_v4jg8")
 
-[node name="MainMenuUI" parent="." instance=ExtResource("1_7qll1")]
+[node name="MainMenuUI" parent="." instance=ExtResource("1_xxkyi")]
 
 [node name="GuiTransition" type="Node" parent="MainMenuUI"]
-script = ExtResource("2_xf2ei")
+script = ExtResource("2_v8eaf")
 layout = NodePath("..")
 
-[node name="AboutUsUI" parent="." instance=ExtResource("3_t72tc")]
+[node name="AboutUsUI" parent="." instance=ExtResource("3_1hrsa")]
 visible = false
 
 [node name="GuiTransition" type="Node" parent="AboutUsUI"]
-script = ExtResource("2_xf2ei")
+script = ExtResource("2_v8eaf")
 layout = NodePath("..")
 
 [node name="Background" type="CanvasLayer" parent="."]
@@ -84,8 +88,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MenuMusic" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("5_p3pt1")
+[node name="Sounds" type="Node" parent="."]
+
+[node name="MenuMusic" type="AudioStreamPlayer" parent="Sounds"]
+unique_name_in_owner = true
+stream = ExtResource("5_cfij3")
 volume_db = -20.64
 autoplay = true
 
@@ -93,4 +100,5 @@ autoplay = true
 [connection signal="play_button_pressed" from="MainMenuUI" to="." method="_on_main_menu_ui_play_button_pressed"]
 [connection signal="quit_button_pressed" from="MainMenuUI" to="." method="_on_main_menu_ui_quit_button_pressed"]
 [connection signal="sound_button_switched" from="MainMenuUI" to="." method="_on_main_menu_ui_sound_button_switched"]
+[connection signal="tutorial_button_switched" from="MainMenuUI" to="." method="_on_main_menu_ui_tutorial_button_switched"]
 [connection signal="back_button_pressed" from="AboutUsUI" to="." method="_on_about_us_ui_back_button_pressed"]

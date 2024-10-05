@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://cr7vpgr65aew4"]
+[gd_scene load_steps=4 format=3 uid="uid://bg6x4klhql52g"]
 
-[ext_resource type="Theme" uid="uid://cu3abw5gbq42e" path="res://UIScenes/UIAssets/tutorial_menu_theme.tres" id="1_2h80y"]
+[ext_resource type="Theme" uid="uid://cu3abw5gbq42e" path="res://UIScenes/UIAssets/tutorial_menu_theme.tres" id="1_axnb8"]
 
 [sub_resource type="GDScript" id="GDScript_3sgrm"]
 resource_name = "main"
@@ -27,14 +27,14 @@ func _on_quit_button_pressed() -> void:
 [sub_resource type="LabelSettings" id="LabelSettings_v8ws4"]
 font_size = 150
 
-[node name="GameOverScreenUI" type="Control"]
+[node name="TryAgainScreenUI" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_2h80y")
+theme = ExtResource("1_axnb8")
 script = SubResource("GDScript_3sgrm")
 
 [node name="ShadingScreen" type="ColorRect" parent="."]
@@ -61,7 +61,7 @@ theme_override_constants/separation = 20
 
 [node name="Label" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Даждьбог разгневан"
+text = "Танцуй лучше"
 label_settings = SubResource("LabelSettings_v8ws4")
 horizontal_alignment = 1
 

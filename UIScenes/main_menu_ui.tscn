@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://dyx3t4ur7smqh"]
+[gd_scene load_steps=4 format=3 uid="uid://dyx3t4ur7smqh"]
+
+[ext_resource type="AudioStream" uid="uid://die8dandh7bwk" path="res://assets/sounds/button.wav" id="1_2kk5h"]
 
 [sub_resource type="GDScript" id="GDScript_7bmnv"]
 resource_name = "main"
@@ -23,6 +25,18 @@ func _on_quit_button_pressed() -> void:
 
 func _on_sound_enabled_button_toggled(toggled_on: bool) -> void:
 	sound_button_switched.emit(toggled_on)
+
+
+func _on_play_button_mouse_entered() -> void:
+	%ButtonHoverSound.play()
+
+
+func _on_about_us_button_mouse_entered() -> void:
+	%ButtonHoverSound.play()
+
+
+func _on_quit_button_mouse_entered() -> void:
+	%ButtonHoverSound.play()
 "
 
 [sub_resource type="LabelSettings" id="LabelSettings_1qmat"]
@@ -104,7 +118,15 @@ size_flags_vertical = 0
 button_pressed = true
 text = "Звук"
 
+[node name="ButtonHoverSound" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("1_2kk5h")
+volume_db = -20.775
+
+[connection signal="mouse_entered" from="CenterContainer/VBoxContainer/MenuButtons/PlayButton" to="." method="_on_play_button_mouse_entered"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/MenuButtons/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="mouse_entered" from="CenterContainer/VBoxContainer/MenuButtons/AboutUsButton" to="." method="_on_about_us_button_mouse_entered"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/MenuButtons/AboutUsButton" to="." method="_on_about_us_button_pressed"]
+[connection signal="mouse_entered" from="CenterContainer/VBoxContainer/MenuButtons/QuitButton" to="." method="_on_quit_button_mouse_entered"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/MenuButtons/QuitButton" to="." method="_on_quit_button_pressed"]
 [connection signal="toggled" from="MarginContainer/SoundEnabledButton" to="." method="_on_sound_enabled_button_toggled"]

@@ -1,6 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://4poiathcvsns"]
+[gd_scene load_steps=13 format=3 uid="uid://4poiathcvsns"]
 
-[ext_resource type="Texture2D" uid="uid://b5bwlyolkwol2" path="res://icon.svg" id="1_600g4"]
+[ext_resource type="Texture2D" uid="uid://dcgcqpavvt7eo" path="res://assets/images/pazzle/base.png" id="1_lr5hy"]
+[ext_resource type="Texture2D" uid="uid://cq0yc3wjjeocv" path="res://assets/images/pazzle/1.png" id="2_ibjic"]
+[ext_resource type="Texture2D" uid="uid://6lfx2ljyu885" path="res://assets/images/pazzle/2.png" id="3_mg7tk"]
+[ext_resource type="Texture2D" uid="uid://rx178gag6ysy" path="res://assets/images/pazzle/3.png" id="4_d6xsr"]
+[ext_resource type="Texture2D" uid="uid://qmte7c6s3skb" path="res://assets/images/pazzle/4.png" id="5_wmu83"]
+[ext_resource type="Texture2D" uid="uid://bpiwmnbou7ega" path="res://assets/images/pazzle/5.png" id="6_co35t"]
+[ext_resource type="Texture2D" uid="uid://xwdp02kqstc1" path="res://assets/images/pazzle/6.png" id="7_pa2c7"]
+[ext_resource type="Texture2D" uid="uid://c1vim3wx5lhr5" path="res://assets/images/pazzle/7.png" id="8_pcmyo"]
+[ext_resource type="Texture2D" uid="uid://b3muj222o4qtq" path="res://assets/images/pazzle/8.png" id="9_r7cyr"]
+[ext_resource type="Texture2D" uid="uid://jv7ga0p5thu6" path="res://assets/images/pazzle/9.png" id="10_hbj4s"]
+[ext_resource type="Texture2D" uid="uid://cioyagejii7mj" path="res://assets/images/pazzle/10.png" id="11_pl7go"]
 
 [sub_resource type="GDScript" id="GDScript_etoxc"]
 resource_name = "main"
@@ -30,36 +40,92 @@ grow_vertical = 2
 script = SubResource("GDScript_etoxc")
 
 [node name="MainTexture" type="TextureRect" parent="."]
+self_modulate = Color(1, 1, 1, 0.298039)
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
-texture = ExtResource("1_600g4")
+texture = ExtResource("1_lr5hy")
 
 [node name="Pieces" type="Control" parent="."]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="TextureRect" type="TextureRect" parent="Pieces"]
+[node name="Piece1" type="TextureRect" parent="Pieces"]
 layout_mode = 0
-offset_left = -63.0
-offset_top = -57.0
-offset_right = 65.0
-offset_bottom = 71.0
-texture = ExtResource("1_600g4")
+offset_left = 2.0
+offset_top = 22.0
+offset_right = 135.0
+offset_bottom = 118.0
+texture = ExtResource("2_ibjic")
 
-[node name="TextureRect2" type="TextureRect" parent="Pieces"]
+[node name="Piece2" type="TextureRect" parent="Pieces"]
 layout_mode = 0
-offset_left = -10.0
-offset_top = 59.0
-offset_right = 119.0
-offset_bottom = 187.0
-texture = ExtResource("1_600g4")
+offset_left = 25.0
+offset_top = 1.0
+offset_right = 137.0
+offset_bottom = 118.0
+texture = ExtResource("3_mg7tk")
 
-[node name="TextureRect3" type="TextureRect" parent="Pieces"]
+[node name="Piece3" type="TextureRect" parent="Pieces"]
 layout_mode = 0
-offset_left = 70.0
-offset_top = -34.0
-offset_right = 198.0
-offset_bottom = 94.0
-texture = ExtResource("1_600g4")
+offset_left = 134.0
+offset_top = 1.0
+offset_right = 248.0
+offset_bottom = 117.0
+texture = ExtResource("4_d6xsr")
+
+[node name="Piece4" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = 133.0
+offset_top = 13.0
+offset_right = 262.0
+offset_bottom = 118.0
+texture = ExtResource("5_wmu83")
+
+[node name="Piece5" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_top = 116.0
+offset_right = 137.0
+offset_bottom = 238.0
+texture = ExtResource("6_co35t")
+
+[node name="Piece6" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = 134.0
+offset_top = 115.0
+offset_right = 261.0
+offset_bottom = 236.0
+texture = ExtResource("7_pa2c7")
+
+[node name="Piece7" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 235.0
+offset_right = 136.0
+offset_bottom = 388.0
+texture = ExtResource("8_pcmyo")
+
+[node name="Piece8" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 234.0
+offset_right = 136.0
+offset_bottom = 413.0
+texture = ExtResource("9_r7cyr")
+
+[node name="Piece9" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = 135.0
+offset_top = 236.0
+offset_right = 255.0
+offset_bottom = 414.0
+texture = ExtResource("10_hbj4s")
+
+[node name="Piece10" type="TextureRect" parent="Pieces"]
+layout_mode = 0
+offset_left = 134.0
+offset_top = 233.0
+offset_right = 256.0
+offset_bottom = 401.0
+texture = ExtResource("11_pl7go")

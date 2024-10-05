@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://ysya4p0qsljl"]
+[gd_scene load_steps=4 format=3 uid="uid://ysya4p0qsljl"]
 
 [ext_resource type="LabelSettings" uid="uid://csh35wxvi1wrn" path="res://UIScenes/UIAssets/AboutUsScreenNamesLabelSettings.tres" id="1_4rllp"]
+[ext_resource type="AudioStream" uid="uid://die8dandh7bwk" path="res://assets/sounds/button.wav" id="2_ue34t"]
 
 [sub_resource type="GDScript" id="GDScript_c1ig6"]
 resource_name = "main"
@@ -11,6 +12,10 @@ signal back_button_pressed
 
 func _on_back_button_pressed() -> void:
 	back_button_pressed.emit()
+
+
+func _on_back_button_mouse_entered() -> void:
+	%ButtonHoverSound.play()
 "
 
 [node name="AboutUsUI" type="Control"]
@@ -104,4 +109,10 @@ layout_mode = 2
 text = "Role5"
 label_settings = ExtResource("1_4rllp")
 
+[node name="ButtonHoverSound" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+stream = ExtResource("2_ue34t")
+volume_db = -20.775
+
+[connection signal="mouse_entered" from="MarginContainer/VBoxContainer/BackButton" to="." method="_on_back_button_mouse_entered"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

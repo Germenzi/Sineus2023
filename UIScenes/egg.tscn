@@ -1,6 +1,6 @@
 [gd_scene load_steps=27 format=3 uid="uid://3a4gd2x3vnrd"]
 
-[ext_resource type="Texture2D" uid="uid://dtgdfmhef7574" path="res://assets/images/egg.png" id="1_k4vt5"]
+[ext_resource type="Texture2D" uid="uid://cxwtdhcndw6mj" path="res://assets/images/egg_base.png" id="1_4eowv"]
 [ext_resource type="Texture2D" uid="uid://dcid07oam6jeg" path="res://assets/images/cracks/1.png" id="2_1h58q"]
 [ext_resource type="Texture2D" uid="uid://c3opmc3rk18rp" path="res://assets/images/cracks/14.png" id="2_6udu5"]
 [ext_resource type="Texture2D" uid="uid://cfwrxvvvl5q36" path="res://assets/images/cracks/2.png" id="3_dpr5w"]
@@ -37,6 +37,17 @@ func set_damage(dmg:int) -> void:
 		$Egg.get_child(dmg-1).show()
 
 
+func set_egg_state(state:int) -> void:
+	if state == 1:
+		$Egg.texture = TexturesNamespace.EGG_STATE1_TEXTURE
+	
+	if state == 2:
+		$Egg.texture = TexturesNamespace.EGG_STATE2_TEXTURE
+	
+	if state == 3:
+		$Egg.texture = TexturesNamespace.EGG_STATE3_TEXTURE
+
+
 func destroy() -> void:
 	$Egg.hide()
 	$DestroyedEgg.show()
@@ -58,19 +69,19 @@ script = SubResource("GDScript_37ejd")
 
 [node name="Egg" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = 7
+anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -191.0
-offset_top = -493.0
-offset_right = 573.0
-offset_bottom = 492.0
+offset_left = 109.0
+offset_top = -582.0
+offset_right = 873.0
+offset_bottom = 467.0
 grow_horizontal = 2
 grow_vertical = 0
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("1_k4vt5")
+texture = ExtResource("1_4eowv")
 stretch_mode = 5
 
 [node name="Crack1" type="TextureRect" parent="Egg"]
@@ -348,10 +359,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -271.0
-offset_top = -253.0
-offset_right = 813.0
-offset_bottom = 251.0
+offset_left = 20.0
+offset_top = -357.0
+offset_right = 1104.0
+offset_bottom = 147.0
 grow_horizontal = 2
 grow_vertical = 0
 scale = Vector2(0.5, 0.5)

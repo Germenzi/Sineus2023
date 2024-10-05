@@ -1,4 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://b7yll0m41uka3"]
+[gd_scene load_steps=5 format=3 uid="uid://b7yll0m41uka3"]
+
+[ext_resource type="PackedScene" uid="uid://6snt5dtxtu6a" path="res://UIScenes/tiling_progress_bar.tscn" id="1_mw71c"]
 
 [sub_resource type="GDScript" id="GDScript_bp7to"]
 resource_name = "main"
@@ -74,15 +76,16 @@ func _process(delta: float) -> void:
 	text = \"%.3f\" % %FailTimer.time_left
 "
 
-[sub_resource type="GDScript" id="GDScript_22ptn"]
-resource_name = "timebar"
-script/source = "extends ProgressBar
+[sub_resource type="GDScript" id="GDScript_wnc06"]
+resource_name = "time_bar"
+script/source = "extends Control
+
 
 var alltime : float = 1.0
 
 
 func _process(delta: float) -> void:
-	value = %FailTimer.time_left / alltime
+	$TilingProgressBar.set_process(%FailTimer.time_left / alltime)
 "
 
 [node name="RuneStack" type="Control"]
@@ -145,13 +148,15 @@ theme_override_constants/margin_left = 100
 theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 100
 
-[node name="TimeBar" type="ProgressBar" parent="MarginContainer"]
+[node name="TimeBar" type="Control" parent="MarginContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 30)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-max_value = 1.0
-step = 0.0
-show_percentage = false
-script = SubResource("GDScript_22ptn")
+size_flags_vertical = 0
+script = SubResource("GDScript_wnc06")
+
+[node name="TilingProgressBar" parent="MarginContainer/TimeBar" instance=ExtResource("1_mw71c")]
+layout_mode = 1
+size_flags_vertical = 0
 
 [connection signal="timeout" from="FailTimer" to="." method="_on_fail_timer_timeout"]

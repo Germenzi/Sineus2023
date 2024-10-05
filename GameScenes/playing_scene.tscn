@@ -251,7 +251,7 @@ func begin_rune_pray() -> void:
 	var t3 = preload(\"res://GameScenes/TasksContent/rune_3_task.tscn\").instantiate()
 	%RuneStack.begin_runes(
 		[t1, t2, t3],
-		15.0
+		25.0
 	)
 
 

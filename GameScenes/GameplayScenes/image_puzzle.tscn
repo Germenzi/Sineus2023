@@ -197,11 +197,12 @@ script = SubResource("GDScript_4pkpr")
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer3/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 200
 alignment = 2
 
 [node name="SampleCenterContainer" type="CenterContainer" parent="MarginContainer3/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 10
 size_flags_vertical = 3
 
 [node name="ImageSample" type="TextureRect" parent="MarginContainer3/VBoxContainer/HBoxContainer/SampleCenterContainer"]
@@ -212,7 +213,7 @@ texture = ExtResource("1_yy65s")
 
 [node name="DropAreaCenterContainer" type="CenterContainer" parent="MarginContainer3/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 2
 size_flags_vertical = 3
 
 [node name="PuzzleImage" type="TextureRect" parent="MarginContainer3/VBoxContainer/HBoxContainer/DropAreaCenterContainer"]

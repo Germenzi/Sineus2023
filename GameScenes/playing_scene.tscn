@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=20 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://3a4gd2x3vnrd" path="res://UIScenes/egg.tscn" id="10_5miwq"]
 [ext_resource type="Texture2D" uid="uid://d4gbb2w67s14p" path="res://assets/images/ground.png" id="10_ef20g"]
 [ext_resource type="Texture2D" uid="uid://b6851ggv5l8c1" path="res://assets/images/dancing_texture_frames.tres" id="13_kc03g"]
+[ext_resource type="Texture2D" uid="uid://djyherdqi7nwp" path="res://assets/images/char_shadow.png" id="14_hy7hd"]
 
 [sub_resource type="GDScript" id="GDScript_7a7so"]
 resource_name = "main"
@@ -314,17 +315,6 @@ texture = ExtResource("8_4g5qf")
 expand_mode = 5
 stretch_mode = 6
 
-[node name="Egg" parent="Background" instance=ExtResource("10_5miwq")]
-unique_name_in_owner = true
-
-[node name="Rain" type="ColorRect" parent="Background"]
-material = SubResource("ShaderMaterial_p3m84")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
 [node name="Ground" type="TextureRect" parent="Background"]
 anchors_preset = 12
 anchor_top = 1.0
@@ -337,21 +327,45 @@ texture = ExtResource("10_ef20g")
 expand_mode = 1
 stretch_mode = 6
 
+[node name="Egg" parent="Background" instance=ExtResource("10_5miwq")]
+unique_name_in_owner = true
+
+[node name="Rain" type="ColorRect" parent="Background"]
+material = SubResource("ShaderMaterial_p3m84")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="Shaman" type="TextureRect" parent="Background"]
 unique_name_in_owner = true
 anchors_preset = -1
-anchor_left = 0.498
-anchor_top = 1.0
-anchor_right = 0.498
-anchor_bottom = 1.0
-offset_left = -133.44
-offset_top = -367.0
-offset_right = 132.56
-offset_bottom = -23.0
-grow_vertical = 2
+anchor_left = 0.25
+anchor_top = 0.935
+anchor_right = 0.25
+anchor_bottom = 0.935
+offset_left = -137.0
+offset_top = -344.2
+offset_right = 129.0
+offset_bottom = -0.200073
+grow_vertical = 0
 texture = ExtResource("13_kc03g")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="TextureRect" type="TextureRect" parent="Background/Shaman"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -41.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 0
+texture = ExtResource("14_hy7hd")
 
 [connection signal="action_missed" from="DanceScene" to="." method="_on_dance_scene_action_missed"]
 [connection signal="correct_action_performed" from="DanceScene" to="." method="_on_dance_scene_correct_action_performed"]

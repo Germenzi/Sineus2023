@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cira0qedb2jbr"]
+[gd_scene load_steps=21 format=3 uid="uid://cira0qedb2jbr"]
 
 [ext_resource type="PackedScene" uid="uid://dl3picqpnqawh" path="res://GameScenes/GameplayScenes/dance_scene.tscn" id="1_bdmix"]
 [ext_resource type="Script" path="res://addons/simple-gui-transitions/transition.gd" id="1_rwten"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://bck1tuauc0uv4" path="res://UIScenes/game_completed_ui.tscn" id="6_orr7l"]
 [ext_resource type="Texture2D" uid="uid://rfphsbuojk1p" path="res://assets/images/bg.png" id="8_4g5qf"]
 [ext_resource type="Shader" path="res://Shaders/rain.gdshader" id="10_3bo7c"]
+[ext_resource type="PackedScene" uid="uid://3a4gd2x3vnrd" path="res://UIScenes/egg.tscn" id="10_5miwq"]
 [ext_resource type="Texture2D" uid="uid://d4gbb2w67s14p" path="res://assets/images/ground.png" id="10_ef20g"]
 [ext_resource type="Texture2D" uid="uid://cec8r0gin8vyd" path="res://assets/images/anim.png" id="12_7oevl"]
 [ext_resource type="Script" path="res://Scripts/FramesTexture.gd" id="13_71iqw"]
@@ -21,10 +22,10 @@ script/source = "extends Node
 var _dance_score : int = 0
 
 var _current_dance : int = 0
-
+var _damage : int = 0
 
 func _ready() -> void:
-	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\"], 2.0)
+	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\", \"W\", \"S\"], 1.0)
 
 
 
@@ -36,6 +37,8 @@ func _on_dance_scene_action_missed() -> void:
 	circle.show_behind_parent = true
 	
 	(%Shaman.texture as TextureFrame).crossing_frame += 1
+	_damage += 1
+	%Egg.set_damage(_damage)
 	
 	print(\"Dance miss\")
 
@@ -103,7 +106,7 @@ func _on_image_puzzle_completed() -> void:
 	$ShadingScreen.hide()
 	%ImagePuzzle.hide()
 	
-	if _dance_score / 18.0 > 0.8:
+	if _dance_score / 24.0 > 0.8:
 		_game_completed()
 		print(\"YOU WIN HAHAHAAH\")
 	else:
@@ -126,7 +129,7 @@ func _on_image_puzzle_failed() -> void:
 
 func _next_dance() -> void:
 	_current_dance += 1
-	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\"], 2.0)
+	%DanceScene.begin_dance([\"W\", \"W\", \"W\", \"S\", \"D\", \"A\", \"W\", \"S\"], 1.0)
 
 
 func _game_completed() -> void:
@@ -142,6 +145,8 @@ func _game_over() -> void:
 	%RuneStack.hide()
 	%ImagePuzzle.hide()
 	%WordMatch.hide()
+	
+	%Egg.destroy()
 	
 	%GameCompletedUI.show()
 	GuiTransitions.go_to(\"GameOverScreenUI\")
@@ -313,7 +318,10 @@ texture = ExtResource("8_4g5qf")
 expand_mode = 5
 stretch_mode = 6
 
-[node name="ColorRect" type="ColorRect" parent="Background"]
+[node name="Egg" parent="Background" instance=ExtResource("10_5miwq")]
+unique_name_in_owner = true
+
+[node name="Rain" type="ColorRect" parent="Background"]
 material = SubResource("ShaderMaterial_p3m84")
 anchors_preset = 15
 anchor_right = 1.0

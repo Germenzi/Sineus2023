@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://bu65gtqjpyrsn"]
+[gd_scene load_steps=7 format=3 uid="uid://bu65gtqjpyrsn"]
 
 [ext_resource type="Texture2D" uid="uid://b5bwlyolkwol2" path="res://icon.svg" id="1_yy65s"]
+[ext_resource type="Shader" path="res://Shaders/only_outline.gdshader" id="2_7xqeo"]
 
 [sub_resource type="GDScript" id="GDScript_w2a63"]
 resource_name = "main"
@@ -19,27 +20,30 @@ var hit_radius : float = 20.0
 var _dragging : Control 
 var _in_puzzle : bool = false
 
-#func _ready() -> void:
-	#begin(preload(\"res://GameScenes/image_puzzle_task.tscn\").instantiate())
+func _ready() -> void:
+	begin(preload(\"res://GameScenes/TasksContent/image_puzzle_task.tscn\").instantiate(), 10000)
 
 
 func begin(scene:Control, time_to_solve:float) -> void:
-	for i in %PieceContainer.get_children():
+	for i in %PieciesToDrag.get_children():
 		i.queue_free()
 	
 	for i in %CorrectlyDroppedPieces.get_children():
 		i.queue_free()
 	
 	%PuzzleImage.texture = scene.get_main_texture()
+	%ImageSample.texture = scene.get_main_texture()
+	
 	for i in scene.get_pieces_info():
 		var inst : Control = DRAGGABLE_SCENE.instantiate()
 		inst.texture = i[0]
-		%PieceContainer.add_child(inst)
+		%PieciesToDrag.add_child(inst)
 		
 		inst.dragged.connect(_on_piece_dragged.bind(inst))
 		inst.dropped.connect(_on_piece_dropped.bind(inst))
 		
-		inst.modulate = Color(randf(), randf(), randf())
+		inst.position = Vector2((%PieciesToDrag.size.x+inst.size.x)*randf(), (%PieciesToDrag.size.y+inst.size.y)*randf()) - inst.size
+		
 		inst.position_at_image = i[1]
 	
 	%FailTimer.wait_time = time_to_solve
@@ -55,7 +59,7 @@ func _process(delta: float) -> void:
 	
 	queue_redraw()
 	if _dragging != null:
-		_dragging.position = get_local_mouse_position() - _dragging.size / 2
+		_dragging.global_position = get_global_mouse_position() - _dragging.size / 2
 
 
 func _on_piece_dragged(piece:TextureRect) -> void:
@@ -83,20 +87,20 @@ func _on_piece_dropped(piece:TextureRect) -> void:
 		piece.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		piece_correctly_dropped.emit()
 	else:
-		piece.reparent(%PieceContainer)
+		piece.reparent(%PieciesToDrag)
 		piece_drop_missed.emit()
 	
 	_dragging = null
 	
-	if %PieceContainer.get_child_count() == 0:
+	if %PieciesToDrag.get_child_count() == 0:
 		completed.emit()
 		%FailTimer.stop()
 		#print(\"WIN\")
 
-
-func _draw() -> void:
-	for i:TextureRect in %PieceContainer.get_children():
-		draw_circle((%PuzzleImage.global_position + i.position_at_image)-global_position, hit_radius, Color.RED)
+#
+#func _draw() -> void:
+	#for i:TextureRect in %PieceContainer.get_children():
+		#draw_circle((%PuzzleImage.global_position + i.position_at_image)-global_position, hit_radius, Color.RED)
 
 
 func _on_fail_timer_timeout() -> void:
@@ -130,6 +134,15 @@ func _process(delta: float) -> void:
 	value = %FailTimer.time_left / alltime
 "
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l5a02"]
+shader = ExtResource("2_7xqeo")
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/width = 2.25
+shader_parameter/pattern = 0
+shader_parameter/inside = false
+shader_parameter/add_margins = true
+shader_parameter/number_of_images = Vector2(1, 1)
+
 [node name="ImagePuzzle" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -139,60 +152,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_w2a63")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
-show_behind_parent = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PuzzleImage" type="TextureRect" parent="CenterContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-texture = ExtResource("1_yy65s")
-
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 50
-theme_override_constants/margin_top = 50
-theme_override_constants/margin_right = 50
-theme_override_constants/margin_bottom = 50
-
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
-layout_mode = 2
-
-[node name="PieceContainer" type="HBoxContainer" parent="MarginContainer/ScrollContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 10
-alignment = 1
-
 [node name="DraggingContainer" type="Node" parent="."]
 unique_name_in_owner = true
-
-[node name="CorrectlyDroppedPieces" type="Control" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -576.0
-offset_top = -324.0
-offset_right = 576.0
-offset_bottom = 324.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
 
 [node name="FailTimer" type="Timer" parent="."]
 unique_name_in_owner = true
@@ -207,19 +168,24 @@ offset_right = 1024.0
 offset_bottom = 353.0
 script = SubResource("GDScript_h25yv")
 
-[node name="MarginContainer2" type="MarginContainer" parent="."]
+[node name="MarginContainer3" type="MarginContainer" parent="."]
+show_behind_parent = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/margin_left = 100
-theme_override_constants/margin_top = 50
-theme_override_constants/margin_right = 100
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
-[node name="TimeBar" type="ProgressBar" parent="MarginContainer2"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer3"]
+layout_mode = 2
+theme_override_constants/separation = 50
+
+[node name="TimeBar" type="ProgressBar" parent="MarginContainer3/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
@@ -227,5 +193,53 @@ max_value = 1.0
 step = 0.0
 show_percentage = false
 script = SubResource("GDScript_4pkpr")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer3/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 2
+
+[node name="SampleCenterContainer" type="CenterContainer" parent="MarginContainer3/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ImageSample" type="TextureRect" parent="MarginContainer3/VBoxContainer/HBoxContainer/SampleCenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("1_yy65s")
+
+[node name="DropAreaCenterContainer" type="CenterContainer" parent="MarginContainer3/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PuzzleImage" type="TextureRect" parent="MarginContainer3/VBoxContainer/HBoxContainer/DropAreaCenterContainer"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_l5a02")
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("1_yy65s")
+
+[node name="CorrectlyDroppedPieces" type="Control" parent="MarginContainer3/VBoxContainer/HBoxContainer/DropAreaCenterContainer/PuzzleImage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PieciesToDrag" type="ColorRect" parent="MarginContainer3/VBoxContainer/HBoxContainer/DropAreaCenterContainer/PuzzleImage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
 
 [connection signal="timeout" from="FailTimer" to="." method="_on_fail_timer_timeout"]

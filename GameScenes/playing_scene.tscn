@@ -203,7 +203,7 @@ func _game_completed() -> void:
 		$ShadingScreen.show()
 		GuiTransitions.show(\"ShadingScreen\")
 	
-	if _damage <= 6:
+	if _damage <= 8:
 		%GameCompletedUI.show()
 		GuiTransitions.show(\"GameCompletedUI\")
 		%WinSpeach.play()
@@ -219,6 +219,10 @@ func _game_completed() -> void:
 
 func _game_over() -> void:
 	_hide_tasks()
+	
+	%ImagePuzzle.queue_free()
+	%RuneStack.queue_free()
+	%WordMatch.queue_free()
 	
 	%Egg.destroy()
 	

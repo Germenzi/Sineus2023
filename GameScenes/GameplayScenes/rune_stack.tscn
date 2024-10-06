@@ -39,6 +39,7 @@ func begin_runes(runes:Array, time:float) -> void:
 	
 	%TimeBar.alltime = time
 
+
 func _on_fail_timer_timeout() -> void:
 	fail()
 
@@ -52,13 +53,13 @@ func _on_rune_completed(rune_match:Control, rune_word:Label) -> void:
 
 
 func success() -> void:
-	succeed.emit()
 	%FailTimer.stop()
+	succeed.emit()
 
 
 func fail() -> void:
-	failed.emit()
 	%FailTimer.stop()
+	failed.emit()
 "
 
 [sub_resource type="GDScript" id="GDScript_62kxw"]
